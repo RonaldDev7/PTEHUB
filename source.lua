@@ -1,0 +1,455 @@
+-- SERVICES
+--========================
+local RunService = game:GetService("RunService")
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local UIS = game:GetService("UserInputService")
+local CoreGui = game:GetService("CoreGui")
+
+local player = Players.LocalPlayer
+local Network = ReplicatedStorage:WaitForChild("NetworkEvents")
+local PurchasePetball = Network:WaitForChild("PURCHASE_PETBALL")
+
+local ClientHeartbeat = player:FindFirstChild("ClientHeartbeat")
+
+--========================
+-- GUI PARENT SAFE
+--========================
+local parentGui = CoreGui
+pcall(function()
+	if gethui then parentGui = gethui() end
+end)
+
+pcall(function()
+	parentGui.PetTrainerHub:Destroy()
+end)
+
+--========================
+-- CONFIG
+--========================
+local AUTO_OPEN = false
+local BUY_DELAY = 3
+local OPEN_AMOUNT = 5 -- cantidad de petballs a abrir por ciclo
+
+local PETBALLS = {
+	["Outer Village"]     = 0,
+	["Autumnal Park"]     = 1,
+	["Greenleaf Town"]    = 2,
+	["Haunted Graveyard"] = 3,
+	["Capital City"]      = 4
+}
+
+local selectedPetballName = "Outer Village"
+local selectedPetballId = PETBALLS[selectedPetballName]
+
+--========================
+-- TELEPORTS
+--========================
+local Teleports = {
+	Capital = CFrame.new(1129.5,91.2,-465.7),
+	Autumn = CFrame.new(719.4,82.4,12.8),
+	Tienda = CFrame.new(79.4,83.0,122.2),
+	Pueblo = CFrame.new(672.4,82.7,-322.3),
+	Cementerio = CFrame.new(737.9,82.8,-745.2)
+}
+
+local function getHRP()
+	local char = player.Character or player.CharacterAdded:Wait()
+	return char:WaitForChild("HumanoidRootPart")
+end
+
+--========================
+-- FORCE PET ENTITY REFRESH (CRÍTICO)
+--========================
+local RunService = game:GetService("RunService")
+
+local function ForcePetEntityRefresh()
+	local char = player.Character
+	if not char then return end
+
+	local hrp = char:FindFirstChild("HumanoidRootPart")
+	if not hrp then return end
+
+	local original = hrp.CFrame
+
+	-- micro re-stream (no visible)
+	hrp.CFrame = original + Vector3.new(0, 0.15, 0)
+	RunService.Heartbeat:Wait()
+	RunService.Heartbeat:Wait()
+	hrp.CFrame = original
+end
+--========================
+-- DRAG FUNCTION
+--========================
+local function makeDraggable(obj)
+	local dragging, dragStart, startPos
+
+	obj.InputBegan:Connect(function(i)
+		if i.UserInputType == Enum.UserInputType.MouseButton1
+		or i.UserInputType == Enum.UserInputType.Touch then
+			dragging = true
+			dragStart = i.Position
+			startPos = obj.Position
+		end
+	end)
+
+	UIS.InputChanged:Connect(function(i)
+		if dragging and (i.UserInputType == Enum.UserInputType.MouseMovement
+		or i.UserInputType == Enum.UserInputType.Touch) then
+			local delta = i.Position - dragStart
+			obj.Position = UDim2.new(
+				startPos.X.Scale, startPos.X.Offset + delta.X,
+				startPos.Y.Scale, startPos.Y.Offset + delta.Y
+			)
+		end
+	end)
+
+	UIS.InputEnded:Connect(function(i)
+		if i.UserInputType == Enum.UserInputType.MouseButton1
+		or i.UserInputType == Enum.UserInputType.Touch then
+			dragging = false
+		end
+	end)
+end
+
+--========================
+-- GUI ROOT
+--========================
+local gui = Instance.new("ScreenGui", parentGui)
+gui.Name = "PetTrainerHub"
+gui.ResetOnSpawn = false
+
+--========================
+-- TOGGLE BUTTON (≡)
+--========================
+local toggleBtn = Instance.new("TextButton", gui)
+toggleBtn.Size = UDim2.new(0,40,0,40)
+toggleBtn.Position = UDim2.new(0,15,0.5,-20)
+toggleBtn.Text = "≡"
+toggleBtn.Font = Enum.Font.GothamBold
+toggleBtn.TextSize = 20
+toggleBtn.TextColor3 = Color3.new(1,1,1)
+toggleBtn.BackgroundColor3 = Color3.fromRGB(25,25,25)
+toggleBtn.BorderSizePixel = 0
+Instance.new("UICorner", toggleBtn).CornerRadius = UDim.new(0,10)
+
+makeDraggable(toggleBtn)
+
+--========================
+-- MAIN FRAME
+--========================
+local main = Instance.new("Frame", gui)
+main.Size = UDim2.new(0,430,0,310)
+main.Position = UDim2.new(0.5,-215,0.5,-155)
+main.BackgroundColor3 = Color3.fromRGB(18,18,18)
+main.BorderSizePixel = 0
+Instance.new("UICorner", main).CornerRadius = UDim.new(0,14)
+
+makeDraggable(main)
+
+toggleBtn.MouseButton1Click:Connect(function()
+	main.Visible = not main.Visible
+end)
+
+--========================
+-- SIDEBAR
+--========================
+local sidebar = Instance.new("Frame", main)
+sidebar.Size = UDim2.new(0,120,1,0)
+sidebar.BackgroundColor3 = Color3.fromRGB(22,22,22)
+Instance.new("UICorner", sidebar).CornerRadius = UDim.new(0,14)
+
+local function sidebarButton(text, y)
+	local b = Instance.new("TextButton", sidebar)
+	b.Size = UDim2.new(1,-10,0,38)
+	b.Position = UDim2.new(0,5,0,y)
+	b.Text = text
+	b.Font = Enum.Font.GothamBold
+	b.TextSize = 14
+	b.TextColor3 = Color3.new(1,1,1)
+	b.BackgroundColor3 = Color3.fromRGB(40,40,40)
+	b.BorderSizePixel = 0
+	Instance.new("UICorner", b).CornerRadius = UDim.new(0,8)
+	return b
+end
+
+local teleportTab = sidebarButton("Teleport", 12)
+local autoTab = sidebarButton("Auto Open", 58)
+local autoBuyTab = sidebarButton("Auto Buy", 104)
+
+--========================
+-- CONTENT FRAMES
+--========================
+local content = Instance.new("Frame", main)
+content.Size = UDim2.new(1,-130,1,-10)
+content.Position = UDim2.new(0,125,0,5)
+content.BackgroundTransparency = 1
+
+local teleportFrame = Instance.new("Frame", content)
+teleportFrame.Size = UDim2.new(1,0,1,0)
+teleportFrame.BackgroundTransparency = 1
+
+local autoFrame = Instance.new("Frame", content)
+autoFrame.Size = UDim2.new(1,0,1,0)
+autoFrame.BackgroundTransparency = 1
+autoFrame.Visible = false
+
+local autoBuyFrame = Instance.new("Frame", content)
+autoBuyFrame.Size = UDim2.new(1,0,1,0)
+autoBuyFrame.BackgroundTransparency = 1
+autoBuyFrame.Visible = false
+
+teleportTab.MouseButton1Click:Connect(function()
+	teleportFrame.Visible = true
+	autoFrame.Visible = false
+	autoBuyFrame.Visible = false
+end)
+
+autoTab.MouseButton1Click:Connect(function()
+	teleportFrame.Visible = false
+	autoFrame.Visible = true
+	autoBuyFrame.Visible = false
+end)
+
+autoBuyTab.MouseButton1Click:Connect(function()
+	teleportFrame.Visible = false
+	autoFrame.Visible = false
+	autoBuyFrame.Visible = true
+end)
+
+--========================
+-- TELEPORT BUTTONS
+--========================
+local ty = 10
+for name,cf in pairs(Teleports) do
+	local b = Instance.new("TextButton", teleportFrame)
+	b.Size = UDim2.new(0,220,0,38)
+	b.Position = UDim2.new(0,10,0,ty)
+	b.Text = name
+	b.Font = Enum.Font.GothamBold
+	b.TextSize = 15
+	b.TextColor3 = Color3.new(1,1,1)
+	b.BackgroundColor3 = Color3.fromRGB(45,45,45)
+	b.BorderSizePixel = 0
+	Instance.new("UICorner", b).CornerRadius = UDim.new(0,8)
+
+	b.MouseButton1Click:Connect(function()
+		getHRP().CFrame = cf
+	end)
+
+	ty += 44
+end
+
+--========================
+-- AUTO OPEN UI
+--========================
+local autoToggle = Instance.new("TextButton", autoFrame)
+autoToggle.Size = UDim2.new(0,220,0,40)
+autoToggle.Position = UDim2.new(0,10,0,10)
+autoToggle.Text = "Auto Open: OFF"
+autoToggle.Font = Enum.Font.GothamBold
+autoToggle.TextSize = 15
+autoToggle.TextColor3 = Color3.new(1,1,1)
+autoToggle.BackgroundColor3 = Color3.fromRGB(90,40,40)
+Instance.new("UICorner", autoToggle).CornerRadius = UDim.new(0,8)
+
+autoToggle.MouseButton1Click:Connect(function()
+	AUTO_OPEN = not AUTO_OPEN
+	autoToggle.Text = "Auto Open: "..(AUTO_OPEN and "ON" or "OFF")
+	autoToggle.BackgroundColor3 = AUTO_OPEN and Color3.fromRGB(40,90,40) or Color3.fromRGB(90,40,40)
+end)
+
+--========================
+-- OPEN AMOUNT LABEL
+--========================
+local amountLabel = Instance.new("TextLabel", autoFrame)
+amountLabel.Size = UDim2.new(0,220,0,20)
+amountLabel.Position = UDim2.new(0,10,0,60)
+amountLabel.Text = "Cantidad a abrir:"
+amountLabel.Font = Enum.Font.Gotham
+amountLabel.TextSize = 13
+amountLabel.TextColor3 = Color3.fromRGB(200,200,200)
+amountLabel.BackgroundTransparency = 1
+amountLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+--========================
+-- OPEN AMOUNT INPUT
+--========================
+local amountBox = Instance.new("TextBox", autoFrame)
+amountBox.Size = UDim2.new(0,130,0,34)
+amountBox.Position = UDim2.new(0,10,0,140)
+amountBox.Text = tostring(OPEN_AMOUNT)
+amountBox.PlaceholderText = "Ej: 1, 10, 100..."
+amountBox.Font = Enum.Font.Gotham
+amountBox.TextSize = 14
+amountBox.TextColor3 = Color3.new(1,1,1)
+amountBox.BackgroundColor3 = Color3.fromRGB(45,45,45)
+amountBox.ClearTextOnFocus = false
+amountBox.BorderSizePixel = 0
+Instance.new("UICorner", amountBox).CornerRadius = UDim.new(0,8)
+
+local amountLabel = Instance.new("TextLabel", autoFrame)
+amountLabel.Size = UDim2.new(0,80,0,34)
+amountLabel.Position = UDim2.new(0,150,0,140)
+amountLabel.Text = "Open Amount"
+amountLabel.Font = Enum.Font.Gotham
+amountLabel.TextSize = 13
+amountLabel.TextColor3 = Color3.fromRGB(200,200,200)
+amountLabel.BackgroundTransparency = 1
+amountLabel.TextXAlignment = Enum.TextXAlignment.Left
+amountLabel.TextYAlignment = Enum.TextYAlignment.Center
+
+--========================
+-- AUTO BUY UI
+--========================
+local AUTO_BUY = false
+
+local autoBuyTitle = Instance.new("TextLabel", autoBuyFrame)
+autoBuyTitle.Size = UDim2.new(0,220,0,40)
+autoBuyTitle.Position = UDim2.new(0,10,0,10)
+autoBuyTitle.Text = "🛒 Auto Buy (Tickets)"
+autoBuyTitle.Font = Enum.Font.GothamBold
+autoBuyTitle.TextSize = 16
+autoBuyTitle.TextColor3 = Color3.new(1,1,1)
+autoBuyTitle.BackgroundTransparency = 1
+autoBuyTitle.TextXAlignment = Enum.TextXAlignment.Left
+
+local autoBuyToggle = Instance.new("TextButton", autoBuyFrame)
+autoBuyToggle.Size = UDim2.new(0,220,0,40)
+autoBuyToggle.Position = UDim2.new(0,10,0,60)
+autoBuyToggle.Text = "Auto Buy: OFF"
+autoBuyToggle.Font = Enum.Font.GothamBold
+autoBuyToggle.TextSize = 15
+autoBuyToggle.TextColor3 = Color3.new(1,1,1)
+autoBuyToggle.BackgroundColor3 = Color3.fromRGB(90,40,40)
+autoBuyToggle.BorderSizePixel = 0
+Instance.new("UICorner", autoBuyToggle).CornerRadius = UDim.new(0,8)
+
+local autoBuyStatus = Instance.new("TextLabel", autoBuyFrame)
+autoBuyStatus.Size = UDim2.new(0,220,0,30)
+autoBuyStatus.Position = UDim2.new(0,10,0,110)
+autoBuyStatus.Text = "Estado: Inactivo"
+autoBuyStatus.Font = Enum.Font.Gotham
+autoBuyStatus.TextSize = 13
+autoBuyStatus.TextColor3 = Color3.fromRGB(200,200,200)
+autoBuyStatus.BackgroundTransparency = 1
+autoBuyStatus.TextXAlignment = Enum.TextXAlignment.Left
+
+--========================
+-- DROPDOWN BUTTON
+--========================
+local dropdown = Instance.new("TextButton", autoFrame)
+dropdown.Size = UDim2.new(0,220,0,34)
+dropdown.Position = UDim2.new(0,10,0,60)
+dropdown.Text = "Petball: "..selectedPetballName
+dropdown.Font = Enum.Font.Gotham
+dropdown.TextSize = 14
+dropdown.TextColor3 = Color3.new(1,1,1)
+dropdown.BackgroundColor3 = Color3.fromRGB(45,45,45)
+Instance.new("UICorner", dropdown).CornerRadius = UDim.new(0,8)
+
+--========================
+-- DROPDOWN OPTIONS
+--========================
+local dropdownOpen = false
+local dropdownButtons = {}
+
+local oy = 98
+for name,id in pairs(PETBALLS) do
+	local opt = Instance.new("TextButton", autoFrame)
+	opt.Size = UDim2.new(0,220,0,24)
+	opt.Position = UDim2.new(0,10,0,oy)
+	opt.Text = name
+	opt.Font = Enum.Font.Gotham
+	opt.TextSize = 13
+	opt.TextColor3 = Color3.new(1,1,1)
+	opt.BackgroundColor3 = Color3.fromRGB(60,60,60)
+	opt.Visible = false
+	Instance.new("UICorner", opt).CornerRadius = UDim.new(0,6)
+
+	opt.MouseButton1Click:Connect(function()
+		selectedPetballName = name
+		selectedPetballId = id
+		dropdown.Text = "Petball: "..name
+		dropdownOpen = false
+		for _,b in pairs(dropdownButtons) do
+			b.Visible = false
+		end
+	end)
+
+	table.insert(dropdownButtons, opt)
+	oy += 22
+end
+
+dropdown.MouseButton1Click:Connect(function()
+	dropdownOpen = not dropdownOpen
+	for _,b in pairs(dropdownButtons) do
+		b.Visible = dropdownOpen
+	end
+end)
+
+--========================
+-- OPEN AMOUNT LOGIC
+--========================
+local OPEN_AMOUNT = 1 -- valor por defecto
+
+amountBox.FocusLost:Connect(function(enterPressed)
+	local n = tonumber(amountBox.Text)
+
+	if n and n >= 1 then
+		OPEN_AMOUNT = math.clamp(math.floor(n), 1, 1000)
+		amountBox.Text = tostring(OPEN_AMOUNT)
+	else
+		amountBox.Text = tostring(OPEN_AMOUNT)
+	end
+end)
+
+--========================
+-- AUTO OPEN LOOP (FIXED)
+--========================
+task.spawn(function()
+	while true do
+		if AUTO_OPEN then
+			pcall(function()
+				PurchasePetball:InvokeServer(selectedPetballId, 1, OPEN_AMOUNT)
+			end)
+
+			task.wait(BUY_DELAY) -- delay fijo
+		else
+			task.wait(0.4)
+		end
+	end
+end)
+
+--========================
+-- AUTO BUY LOGICA
+--========================
+local BuyRemote = ReplicatedStorage:WaitForChild("NetworkEvents"):WaitForChild("PURCHASE_SHOP_STOCK")
+
+local function buyAllTickets()
+	for _,item in ipairs(require(ReplicatedStorage:WaitForChild("ShopStock"))) do
+		if AUTO_BUY and item.resource and item.ticket_price and item.ticket_price > 0 then
+			pcall(function()
+				BuyRemote:InvokeServer(item.resource, 1)
+			end)
+			task.wait(0.25)
+		end
+	end
+end
+
+autoBuyToggle.MouseButton1Click:Connect(function()
+	AUTO_BUY = not AUTO_BUY
+	autoBuyToggle.Text = "Auto Buy: "..(AUTO_BUY and "ON" or "OFF")
+	autoBuyToggle.BackgroundColor3 = AUTO_BUY and Color3.fromRGB(40,90,40) or Color3.fromRGB(90,40,40)
+	autoBuyStatus.Text = AUTO_BUY and "Comprando con tickets..." or "Estado: Inactivo"
+
+	if AUTO_BUY then
+		task.spawn(function()
+			while AUTO_BUY do
+				buyAllTickets()
+				task.wait(5)
+			end
+		end)
+	end
+end)
