@@ -114,6 +114,19 @@ local function makeDraggable(obj)
 end
 
 --========================
+-- UI HOVER EFFECT
+--========================
+local function applyHover(button, normalColor, hoverColor)
+	button.MouseEnter:Connect(function()
+		button.BackgroundColor3 = hoverColor
+	end)
+
+	button.MouseLeave:Connect(function()
+		button.BackgroundColor3 = normalColor
+	end)
+end
+
+--========================
 -- GUI ROOT
 --========================
 local gui = Instance.new("ScreenGui", parentGui)
@@ -171,6 +184,11 @@ local function sidebarButton(text, y)
 	b.BackgroundColor3 = Color3.fromRGB(40,40,40)
 	b.BorderSizePixel = 0
 	Instance.new("UICorner", b).CornerRadius = UDim.new(0,8)
+	applyHover(
+	b,
+	Color3.fromRGB(40,40,40),
+	Color3.fromRGB(60,60,60)
+	)
 	return b
 end
 
@@ -260,6 +278,12 @@ autoToggle.MouseButton1Click:Connect(function()
 	autoToggle.BackgroundColor3 = AUTO_OPEN and Color3.fromRGB(40,90,40) or Color3.fromRGB(90,40,40)
 end)
 
+applyHover(
+	autoToggle,
+	Color3.fromRGB(90,40,40),
+	Color3.fromRGB(120,55,55)
+)
+
 --========================
 -- OPEN AMOUNT LABEL
 --========================
@@ -314,6 +338,11 @@ autoBuyToggle.TextColor3 = Color3.new(1,1,1)
 autoBuyToggle.BackgroundColor3 = Color3.fromRGB(90,40,40)
 autoBuyToggle.BorderSizePixel = 0
 Instance.new("UICorner", autoBuyToggle).CornerRadius = UDim.new(0,8)
+applyHover(
+	autoBuyToggle,
+	Color3.fromRGB(90,40,40),
+	Color3.fromRGB(120,55,55)
+)
 
 local autoBuyStatus = Instance.new("TextLabel", autoBuyFrame)
 autoBuyStatus.Size = UDim2.new(0,220,0,30)
