@@ -339,9 +339,19 @@ autoBuyStatus.TextXAlignment = Enum.TextXAlignment.Left
 --========================
 -- DROPDOWN BUTTON
 --========================
+local petballLabel = Instance.new("TextLabel", autoFrame)
+petballLabel.Size = UDim2.new(0,220,0,20)
+petballLabel.Position = UDim2.new(0,10,0,45)
+petballLabel.Text = "Petball"
+petballLabel.Font = Enum.Font.Gotham
+petballLabel.TextSize = 13
+petballLabel.TextColor3 = Color3.fromRGB(200,200,200)
+petballLabel.BackgroundTransparency = 1
+petballLabel.TextXAlignment = Enum.TextXAlignment.Left
+
 local dropdown = Instance.new("TextButton", autoFrame)
 dropdown.Size = UDim2.new(0,220,0,34)
-dropdown.Position = UDim2.new(0,10,0,60)
+dropdown.Position = UDim2.new(0,10,0,70)
 dropdown.Text = "Petball: "..selectedPetballName
 dropdown.Font = Enum.Font.Gotham
 dropdown.TextSize = 14
