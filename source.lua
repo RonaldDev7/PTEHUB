@@ -30,7 +30,7 @@ end)
 --========================
 local AUTO_OPEN = false
 local BUY_DELAY = 3
-local OPEN_AMOUNT = 5 -- cantidad de petballs a abrir por ciclo
+local OPEN_AMOUNT = 1-- cantidad de petballs a abrir por ciclo
 
 local PETBALLS = {
 	["Outer Village"]     = 0,
@@ -265,7 +265,7 @@ end)
 --========================
 local amountLabel = Instance.new("TextLabel", autoFrame)
 amountLabel.Size = UDim2.new(0,220,0,20)
-amountLabel.Position = UDim2.new(0,10,0,60)
+amountLabel.Position = UDim2.new(0,10,0,115)
 amountLabel.Text = "Cantidad a abrir:"
 amountLabel.Font = Enum.Font.Gotham
 amountLabel.TextSize = 13
@@ -277,7 +277,7 @@ amountLabel.TextXAlignment = Enum.TextXAlignment.Left
 -- OPEN AMOUNT INPUT
 --========================
 local amountBox = Instance.new("TextBox", autoFrame)
-amountBox.Size = UDim2.new(0,130,0,34)
+amountBox.Size = UDim2.new(0,220,0,36)
 amountBox.Position = UDim2.new(0,10,0,140)
 amountBox.Text = tostring(OPEN_AMOUNT)
 amountBox.PlaceholderText = "Ej: 1, 10, 100..."
@@ -288,17 +288,6 @@ amountBox.BackgroundColor3 = Color3.fromRGB(45,45,45)
 amountBox.ClearTextOnFocus = false
 amountBox.BorderSizePixel = 0
 Instance.new("UICorner", amountBox).CornerRadius = UDim.new(0,8)
-
-local amountLabel = Instance.new("TextLabel", autoFrame)
-amountLabel.Size = UDim2.new(0,80,0,34)
-amountLabel.Position = UDim2.new(0,150,0,140)
-amountLabel.Text = "Open Amount"
-amountLabel.Font = Enum.Font.Gotham
-amountLabel.TextSize = 13
-amountLabel.TextColor3 = Color3.fromRGB(200,200,200)
-amountLabel.BackgroundTransparency = 1
-amountLabel.TextXAlignment = Enum.TextXAlignment.Left
-amountLabel.TextYAlignment = Enum.TextYAlignment.Center
 
 --========================
 -- AUTO BUY UI
@@ -402,8 +391,6 @@ end)
 --========================
 -- OPEN AMOUNT LOGIC
 --========================
-local OPEN_AMOUNT = 1 -- valor por defecto
-
 amountBox.FocusLost:Connect(function(enterPressed)
 	local n = tonumber(amountBox.Text)
 
