@@ -6,6 +6,7 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UIS = game:GetService("UserInputService")
 local CoreGui = game:GetService("CoreGui")
+local TweenService = game:GetService("TweenService")
 
 local player = Players.LocalPlayer
 local Network = ReplicatedStorage:WaitForChild("NetworkEvents")
@@ -118,12 +119,24 @@ end
 --========================
 local function applyHover(button, normalColor, hoverColor)
 	button.MouseEnter:Connect(function()
-		button.BackgroundColor3 = hoverColor
+		tweenColor(button, hoverColor)
 	end)
 
 	button.MouseLeave:Connect(function()
-		button.BackgroundColor3 = normalColor
+		tweenColor(button, normalColor)
 	end)
+end
+
+--========================
+-- UI TWEEN COLOR
+--========================
+local function tweenColor(obj, targetColor, speed)
+	local tween = TweenService:Create(
+		obj,
+		TweenInfo.new(speed or 0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+		{BackgroundColor3 = targetColor}
+	)
+	tween:Play()
 end
 
 --========================
@@ -275,7 +288,12 @@ Instance.new("UICorner", autoToggle).CornerRadius = UDim.new(0,8)
 autoToggle.MouseButton1Click:Connect(function()
 	AUTO_OPEN = not AUTO_OPEN
 	autoToggle.Text = "Auto Open: "..(AUTO_OPEN and "ON" or "OFF")
-	autoToggle.BackgroundColor3 = AUTO_OPEN and Color3.fromRGB(40,90,40) or Color3.fromRGB(90,40,40)
+
+	tweenColor(
+		autoToggle,
+		AUTO_OPEN and Color3.fromRGB(40,90,40) or Color3.fromRGB(90,40,40),
+		0.2
+	)
 end)
 
 applyHover(
@@ -467,8 +485,13 @@ end
 autoBuyToggle.MouseButton1Click:Connect(function()
 	AUTO_BUY = not AUTO_BUY
 	autoBuyToggle.Text = "Auto Buy: "..(AUTO_BUY and "ON" or "OFF")
-	autoBuyToggle.BackgroundColor3 = AUTO_BUY and Color3.fromRGB(40,90,40) or Color3.fromRGB(90,40,40)
 	autoBuyStatus.Text = AUTO_BUY and "Comprando con tickets..." or "Estado: Inactivo"
+
+	tweenColor(
+		autoBuyToggle,
+		AUTO_BUY and Color3.fromRGB(40,90,40) or Color3.fromRGB(90,40,40),
+		0.2
+	)
 
 	if AUTO_BUY then
 		task.spawn(function()
