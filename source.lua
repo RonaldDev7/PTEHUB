@@ -20,7 +20,6 @@ local FarmeablesFolder = Workspace:WaitForChild("Farmeables")
 local AUTO_FARM = false
 local selectedFarmableType = selectedFarmableType or "arbusto"
 
-print("10")
 --========================
 -- GUI PARENT SAFE
 --========================
@@ -317,21 +316,9 @@ local function getValidFarmables()
 
 	for _,model in ipairs(FarmeablesFolder:GetChildren()) do
 		if model:IsA("Model") then
-			-- buscar MeshPart con nombre del tipo seleccionado
-			local found = false
-
-			for _,obj in ipairs(model:GetDescendants()) do
-				if obj:IsA("MeshPart") and obj.Name == selectedFarmableType then
-					found = true
-					break
-				end
-			end
-
-			if found then
-				local health = model:FindFirstChild("Health")
-				if health and health.Value > 0 then
-					table.insert(valid, model)
-				end
+			local health = model:FindFirstChild("Health", true)
+			if health and health.Value > 0 then
+				table.insert(valid, model)
 			end
 		end
 	end
@@ -946,11 +933,34 @@ end)
 local currentTarget = nil
 
 --========================
+-- GET FARMEABLE ID (REAL)
+--========================
+local function getFarmableId(model)
+	-- 1. Attribute
+	local attr = model:GetAttribute("Id") or model:GetAttribute("ID")
+	if attr then
+		return tostring(attr)
+	end
+
+	-- 2. StringValue / IntValue
+	for _,v in ipairs(model:GetChildren()) do
+		if v:IsA("StringValue") or v:IsA("IntValue") then
+			if v.Name:lower():find("id") then
+				return tostring(v.Value)
+			end
+		end
+	end
+
+	-- 3. Fallback (último recurso)
+	return model.Name
+end
+
+--========================
 -- AUTO FARM LOOP
 --========================
 task.spawn(function()
 	while true do
-		if not AUTO_FARM or selectedFarmableType == nil then
+		if not AUTO_FARM then
 			currentTarget = nil
 			task.wait(0.5)
 			continue
@@ -959,11 +969,33 @@ task.spawn(function()
 		-- si no hay target o se destruyó, buscamos uno nuevo
 		if not currentTarget or not currentTarget.Parent then
 			local farmables = getValidFarmables()
-			currentTarget = farmables[1]
+
+			-- FILTRAR POR TIPO SELECCIONADO
+			if selectedFarmableType then
+				for i = #farmables, 1, -1 do
+					local model = farmables[i]
+					local matches = false
+
+					for _,obj in ipairs(model:GetDescendants()) do
+						if obj:IsA("MeshPart") 
+						and string.find(obj.Name:lower(), selectedFarmableType:lower()) then
+						matches = true
+						break
+					end
+				end
+
+				if not matches then
+					table.remove(farmables, i)
+				end
+			end
+		end
+
+		currentTarget = farmables[1]
+
 		end
 
 		if currentTarget then
-			local targetId = currentTarget.Name
+			local targetId = getFarmableId(currentTarget)
 
 			-- enviar pets UNA sola vez
 			local payload = {}
