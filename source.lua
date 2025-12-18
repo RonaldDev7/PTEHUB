@@ -372,14 +372,21 @@ autoToggle.TextColor3 = Color3.new(1,1,1)
 autoToggle.BackgroundColor3 = THEME.INACTIVE
 Instance.new("UICorner", autoToggle).CornerRadius = UDim.new(0,8)
 
--- Indicador ON/OFF (Auto Open)
-local autoDot = Instance.new("Frame")
-autoDot.Parent = autoToggle
+--========================
+-- AUTO OPEN INDICATOR DOT
+--========================
+local autoDot = Instance.new("Frame", autoToggle)
 autoDot.Size = UDim2.new(0,10,0,10)
-autoDot.Position = UDim2.new(1,-18,0.5,-5)
+autoDot.Position = UDim2.new(1,-16,0.5,-5)
 autoDot.BackgroundColor3 = THEME.INACTIVE
 autoDot.BorderSizePixel = 0
+
 Instance.new("UICorner", autoDot).CornerRadius = UDim.new(1,0)
+
+local dotStroke = Instance.new("UIStroke", autoDot)
+dotStroke.Thickness = 1
+dotStroke.Color = Color3.fromRGB(40,40,40)
+
 
 addHover(
 	autoToggle,
@@ -401,6 +408,9 @@ autoToggle.MouseButton1Click:Connect(function()
 		AUTO_OPEN and THEME.ACTIVE or THEME.INACTIVE,
 		0.2
 	)
+
+	autoDot.BackgroundColor3 = AUTO_OPEN and THEME.ACTIVE or THEME.INACTIVE
+
 end)
 
 applyHover(
@@ -634,4 +644,3 @@ autoBuyToggle.MouseButton1Click:Connect(function()
 		end)
 	end
 end)
-
