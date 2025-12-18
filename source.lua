@@ -44,6 +44,19 @@ local PETBALLS = {
 local selectedPetballName = "Outer Village"
 local selectedPetballId = PETBALLS[selectedPetballName]
 
+-- AUTO FARM CONFIG
+local AUTO_FARM = false
+local FARM_DELAY = 12
+
+local Workspace = game:GetService("Workspace")
+local FarmeablesFolder = Workspace:WaitForChild("Farmeables")
+
+local SetPetsTasks = Network:WaitForChild("SET_PETS_TASKS")
+
+local PET_IDS = {
+	"7183","7606","7605","7090","6980","7607"
+}
+
 --========================
 -- THEME
 --========================
@@ -327,12 +340,13 @@ end
 local teleportTab = sidebarButton("Teleport", 12)
 local autoTab = sidebarButton("Auto Open", 58)
 local autoBuyTab = sidebarButton("Auto Buy", 104)
+local autoFarmTab = sidebarButton("Auto Farm", 150)
 local currentTab = teleportTab
 
 local function setActiveTab(active)
 	currentTab = active
 
-	for _,btn in pairs({teleportTab, autoTab, autoBuyTab}) do
+	for _,btn in pairs({teleportTab, autoTab, autoBuyTab, autoFarmTab}) do
 		btn.BackgroundColor3 = THEME.SIDEBAR_IDLE
 	end
 
@@ -363,6 +377,11 @@ autoBuyFrame.Size = UDim2.new(1,0,1,0)
 autoBuyFrame.BackgroundTransparency = 1
 autoBuyFrame.Visible = false
 
+local autoFarmFrame = Instance.new("Frame", content)
+autoFarmFrame.Size = UDim2.new(1,0,1,0)
+autoFarmFrame.BackgroundTransparency = 1
+autoFarmFrame.Visible = false
+
 teleportTab.MouseButton1Click:Connect(function()
 	setActiveTab(teleportTab)
 	teleportFrame.Visible = true
@@ -386,6 +405,16 @@ autoBuyTab.MouseButton1Click:Connect(function()
 	teleportFrame.Visible = false
 	autoFrame.Visible = false
 	autoBuyFrame.Visible = true
+
+	applyTheme()
+end)
+
+autoFarmTab.MouseButton1Click:Connect(function()
+	setActiveTab(autoFarmTab)
+	teleportFrame.Visible = false
+	autoFrame.Visible = false
+	autoBuyFrame.Visible = false
+	autoFarmFrame.Visible = true
 
 	applyTheme()
 end)
@@ -539,6 +568,45 @@ autoBuyToggle.BorderSizePixel = 0
 Instance.new("UICorner", autoBuyToggle).CornerRadius = UDim.new(0,8)
 
 autoBuyToggle.ClipsDescendants = false
+
+--========================
+-- AUTO FARM UI
+--========================
+local autoFarmToggle = Instance.new("TextButton", autoFarmFrame)
+autoFarmToggle.Size = UDim2.new(0,220,0,40)
+autoFarmToggle.Position = UDim2.new(0,10,0,10)
+autoFarmToggle.Text = "Auto Farm: OFF"
+autoFarmToggle.Font = Enum.Font.GothamBold
+autoFarmToggle.TextSize = 15
+autoFarmToggle.TextColor3 = Color3.new(1,1,1)
+autoFarmToggle.BackgroundColor3 = THEME.INACTIVE
+autoFarmToggle.BorderSizePixel = 0
+Instance.new("UICorner", autoFarmToggle).CornerRadius = UDim.new(0,8)
+
+local autoFarmDot = Instance.new("Frame", autoFarmToggle)
+autoFarmDot.Size = UDim2.new(0,10,0,10)
+autoFarmDot.Position = UDim2.new(1,-16,0.5,-5)
+autoFarmDot.BackgroundColor3 = THEME.INACTIVE
+autoFarmDot.BorderSizePixel = 0
+Instance.new("UICorner", autoFarmDot).CornerRadius = UDim.new(1,0)
+
+autoFarmToggle.MouseButton1Click:Connect(function()
+	AUTO_FARM = not AUTO_FARM
+	autoFarmToggle.Text = "Auto Farm: "..(AUTO_FARM and "ON" or "OFF")
+
+	tweenColor(
+		autoFarmToggle,
+		AUTO_FARM and THEME.ACTIVE or THEME.INACTIVE,
+		0.2
+	)
+
+	autoFarmDot.BackgroundColor3 = AUTO_FARM and THEME.ACTIVE or THEME.INACTIVE
+	autoFarmDot:SetAttribute("Active", AUTO_FARM)
+
+	if AUTO_FARM then
+		pulseDot(autoFarmDot)
+	end
+end)
 
 --========================
 -- AUTO BUY INDICATOR DOT
