@@ -74,8 +74,8 @@ local function applyTheme()
 	autoBuyTab.BackgroundColor3 = THEME.SIDEBAR_IDLE
 
 	-- Toggles
-	autoToggle.BackgroundColor3 = autoEnabled and THEME.ACTIVE or THEME.INACTIVE
-	autoBuyToggle.BackgroundColor3 = autoBuyEnabled and THEME.ACTIVE or THEME.INACTIVE
+	autoToggle.BackgroundColor3 = AUTO_OPEN and THEME.ACTIVE or THEME.INACTIVE
+	autoBuyToggle.BackgroundColor3 = AUTO_BUY and THEME.ACTIVE or THEME.INACTIVE
 
 	-- Status dots
 	autoDot.BackgroundColor3 = autoEnabled and THEME.ACTIVE or THEME.INACTIVE
@@ -468,6 +468,21 @@ autoToggle.MouseButton1Click:Connect(function()
 	end
 end)
 
+-- HOVER AUTO OPEN (RESPETA ESTADO)
+autoToggle.MouseEnter:Connect(function()
+	if not AUTO_OPEN then
+		tweenColor(autoToggle, THEME.SIDEBAR_HOVER, 0.12)
+	end
+end)
+
+autoToggle.MouseLeave:Connect(function()
+	tweenColor(
+		autoToggle,
+		AUTO_OPEN and THEME.ACTIVE or THEME.INACTIVE,
+		0.12
+	)
+end)
+
 --========================
 -- OPEN AMOUNT LABEL
 --========================
@@ -706,4 +721,19 @@ autoBuyToggle.MouseButton1Click:Connect(function()
 	if AUTO_BUY then
 		pulseDot(autoBuyDot)
 	end
+end)
+
+-- HOVER AUTO BUY (RESPETA ESTADO)
+autoBuyToggle.MouseEnter:Connect(function()
+	if not AUTO_BUY then
+		tweenColor(autoBuyToggle, THEME.SIDEBAR_HOVER, 0.12)
+	end
+end)
+
+autoBuyToggle.MouseLeave:Connect(function()
+	tweenColor(
+		autoBuyToggle,
+		AUTO_BUY and THEME.ACTIVE or THEME.INACTIVE,
+		0.12
+	)
 end)
