@@ -88,16 +88,21 @@ local THEME = {
 }
 
 local function applyTheme()
-	-- Sidebar buttons
+	if not teleportTab then return end
+	if not autoTab then return end
+	if not autoBuyTab then return end
+	if not autoFarmTab then return end
+
 	for _,btn in pairs({teleportTab, autoTab, autoBuyTab, autoFarmTab}) do
-		btn.BackgroundColor3 = THEME.SIDEBAR_IDLE
+		if btn then
+			btn.BackgroundColor3 = THEME.SIDEBAR_IDLE
+		end
 	end
 
 	if currentTab then
 		currentTab.BackgroundColor3 = THEME.SIDEBAR_ACTIVE
 	end
 
-	-- Toggles
 	if autoToggle then
 		autoToggle.BackgroundColor3 = AUTO_OPEN and THEME.ACTIVE or THEME.INACTIVE
 	end
@@ -110,7 +115,6 @@ local function applyTheme()
 		autoFarmToggle.BackgroundColor3 = AUTO_FARM and THEME.ACTIVE or THEME.INACTIVE
 	end
 
-	-- Dots
 	if autoDot then
 		autoDot.BackgroundColor3 = AUTO_OPEN and THEME.ACTIVE or THEME.INACTIVE
 	end
@@ -123,7 +127,6 @@ local function applyTheme()
 		autoFarmDot.BackgroundColor3 = AUTO_FARM and THEME.ACTIVE or THEME.INACTIVE
 	end
 end
-
 
 --========================
 -- TELEPORTS
