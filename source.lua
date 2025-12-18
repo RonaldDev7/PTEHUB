@@ -348,6 +348,7 @@ local toggleStroke = Instance.new("UIStroke")
 toggleStroke.Parent = toggleBtn
 toggleStroke.Thickness = 1
 toggleStroke.Color = Color3.fromRGB(65,65,65)
+toggleStroke.ZIndex = 9
 
 makeDraggable(toggleBtn)
 
@@ -370,6 +371,7 @@ local mainStroke = Instance.new("UIStroke")
 mainStroke.Parent = main
 mainStroke.Thickness = 1
 mainStroke.Color = Color3.fromRGB(55,55,55)
+mainStroke.ZIndex = 9
 
 toggleBtn.MouseButton1Click:Connect(function()
 	if main.Visible then
@@ -543,7 +545,7 @@ autoToggle.Font = Enum.Font.GothamBold
 autoToggle.TextSize = 15
 autoToggle.TextColor3 = Color3.new(1,1,1)
 autoToggle.BackgroundColor3 = THEME.INACTIVE
-autoToogle.ZIndex = 13
+autoToggle.ZIndex = 13
 Instance.new("UICorner", autoToggle).CornerRadius = UDim.new(0,8)
 
 autoToggle.ClipsDescendants = false
@@ -556,8 +558,7 @@ autoDot.Size = UDim2.new(0,10,0,10)
 autoDot.Position = UDim2.new(1,-16,0.5,-5)
 autoDot.BackgroundColor3 = THEME.INACTIVE
 autoDot.BorderSizePixel = 0
-autoDot.ZIndex = 5
-autoToggle.ZIndex = 1
+autoDot.ZIndex = 14
 Instance.new("UICorner", autoDot).CornerRadius = UDim.new(1,0)
 
 local dotStroke = Instance.new("UIStroke", autoDot)
@@ -568,6 +569,7 @@ local autoOpenStroke = Instance.new("UIStroke")
 autoOpenStroke.Parent = autoToggle
 autoOpenStroke.Thickness = 1
 autoOpenStroke.Color = Color3.fromRGB(65,65,65)
+autoOpenStroke.ZIndex = 14
 
 autoToggle.MouseButton1Click:Connect(function()
 	AUTO_OPEN = not AUTO_OPEN
@@ -715,7 +717,7 @@ Instance.new("UICorner", farmDropdown).CornerRadius = UDim.new(0,8)
 local farmDropdownStroke = Instance.new("UIStroke", farmDropdown)
 farmDropdownStroke.Thickness = 1
 farmDropdownStroke.Color = Color3.fromRGB(65,65,65)
-farmDropdownStroke.ZIndex = 22
+farmDropdownStroke.ZIndex = 14
 
 --========================
 -- FARM DROPDOWN SCROLL
@@ -805,6 +807,7 @@ local autoBuyStroke = Instance.new("UIStroke")
 autoBuyStroke.Parent = autoBuyToggle
 autoBuyStroke.Thickness = 1
 autoBuyStroke.Color = Color3.fromRGB(65,65,65)
+autoBuyStroke.ZIndex = 14
 
 local autoBuyStatus = Instance.new("TextLabel", autoBuyFrame)
 autoBuyStatus.Size = UDim2.new(0,220,0,30)
@@ -849,6 +852,7 @@ local dropdownStroke = Instance.new("UIStroke")
 dropdownStroke.Parent = dropdown
 dropdownStroke.Thickness = 1
 dropdownStroke.Color = Color3.fromRGB(65,65,65)
+dropdownStroke.ZIndex = 14
 
 --========================
 -- DROPDOWN OPTIONS
