@@ -359,7 +359,7 @@ main.Size = UDim2.new(0,430,0,310)
 main.Position = UDim2.new(0.5,-215,0.5,-155)
 main.BackgroundColor3 = THEME.BG
 main.BorderSizePixel = 0
-main.ZIndex = 5
+main.ZIndex = 10
 Instance.new("UICorner", main).CornerRadius = UDim.new(0,14)
 
 makeDraggable(main)
@@ -390,6 +390,7 @@ end)
 local sidebar = Instance.new("Frame", main)
 sidebar.Size = UDim2.new(0,120,1,0)
 sidebar.BackgroundColor3 = THEME.PANEL
+sidebar.ZIndex = 11
 Instance.new("UICorner", sidebar).CornerRadius = UDim.new(0,14)
 
 local function sidebarButton(text, y)
@@ -443,27 +444,30 @@ local content = Instance.new("Frame", main)
 content.Size = UDim2.new(1,-130,1,-10)
 content.Position = UDim2.new(0,125,0,5)
 content.BackgroundTransparency = 1
-content.ZIndex = 10
+content.ZIndex = 11
 
 local teleportFrame = Instance.new("Frame", content)
 teleportFrame.Size = UDim2.new(1,0,1,0)
 teleportFrame.BackgroundTransparency = 1
+teleportFrame.ZIndex = 12
 
 local autoFrame = Instance.new("Frame", content)
 autoFrame.Size = UDim2.new(1,0,1,0)
 autoFrame.BackgroundTransparency = 1
 autoFrame.Visible = false
+autoFrame.ZIndex = 12
 
 local autoBuyFrame = Instance.new("Frame", content)
 autoBuyFrame.Size = UDim2.new(1,0,1,0)
 autoBuyFrame.BackgroundTransparency = 1
 autoBuyFrame.Visible = false
+autoBuyFrame.ZIndex = 12
 
 local autoFarmFrame = Instance.new("Frame", content)
 autoFarmFrame.Size = UDim2.new(1,0,1,0)
 autoFarmFrame.BackgroundTransparency = 1
 autoFarmFrame.Visible = false
-autoFarmFrame.ZIndex = 20
+autoFarmFrame.ZIndex = 12
 
 teleportTab.MouseButton1Click:Connect(function()
 	setActiveTab(teleportTab)
@@ -539,6 +543,7 @@ autoToggle.Font = Enum.Font.GothamBold
 autoToggle.TextSize = 15
 autoToggle.TextColor3 = Color3.new(1,1,1)
 autoToggle.BackgroundColor3 = THEME.INACTIVE
+autoToogle.ZIndex = 13
 Instance.new("UICorner", autoToggle).CornerRadius = UDim.new(0,8)
 
 autoToggle.ClipsDescendants = false
@@ -651,6 +656,7 @@ autoBuyToggle.TextSize = 15
 autoBuyToggle.TextColor3 = Color3.new(1,1,1)
 autoBuyToggle.BackgroundColor3 = THEME.INACTIVE
 autoBuyToggle.BorderSizePixel = 0
+autoBuyToggle.ZIndex = 13
 Instance.new("UICorner", autoBuyToggle).CornerRadius = UDim.new(0,8)
 
 autoBuyToggle.ClipsDescendants = false
@@ -667,6 +673,7 @@ autoFarmToggle.TextSize = 15
 autoFarmToggle.TextColor3 = Color3.new(1,1,1)
 autoFarmToggle.BackgroundColor3 = THEME.INACTIVE
 autoFarmToggle.BorderSizePixel = 0
+autoFarmToggle.ZIndex = 13
 Instance.new("UICorner", autoFarmToggle).CornerRadius = UDim.new(0,8)
 
 local autoFarmDot = Instance.new("Frame", autoFarmToggle)
@@ -702,7 +709,7 @@ farmDropdown.TextSize = 14
 farmDropdown.TextColor3 = THEME.TEXT
 farmDropdown.BackgroundColor3 = Color3.fromRGB(45,45,45)
 farmDropdown.BorderSizePixel = 0
-farmDropdown.ZIndex = 21
+farmDropdown.ZIndex = 13
 Instance.new("UICorner", farmDropdown).CornerRadius = UDim.new(0,8)
 
 local farmDropdownStroke = Instance.new("UIStroke", farmDropdown)
