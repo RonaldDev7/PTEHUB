@@ -14,6 +14,12 @@ local PurchasePetball = Network:WaitForChild("PURCHASE_PETBALL")
 
 local ClientHeartbeat = player:FindFirstChild("ClientHeartbeat")
 
+local Workspace = game:GetService("Workspace")
+local FarmeablesFolder = Workspace:WaitForChild("Farmeables")
+
+local AUTO_FARM = false
+local selectedFarmableType = selectedFarmableType or "arbusto"
+
 --========================
 -- GUI PARENT SAFE
 --========================
@@ -292,6 +298,33 @@ local function scanFarmableTypes()
 
 	table.sort(FarmableTypes)
 	selectedFarmableType = FarmableTypes[1]
+end
+
+--========================
+-- GET VALID FARMEABLES
+--========================
+local function getValidFarmables()
+	local valid = {}
+
+	for _,folder in ipairs(FarmeablesFolder:GetChildren()) do
+		if folder:IsA("Folder") then
+			for _,model in ipairs(folder:GetChildren()) do
+				if model:IsA("Model") then
+					-- Buscar MeshPart con nombre del farmeable seleccionado
+					local mesh = model:FindFirstChildWhichIsA("MeshPart", true)
+					if mesh and mesh.Name == selectedFarmableType then
+						-- Comprobar vida
+						local health = model:FindFirstChild("Health")
+						if health and health.Value > 0 then
+							table.insert(valid, model)
+						end
+					end
+				end
+			end
+		end
+	end
+
+	return valid
 end
 
 --========================
@@ -875,6 +908,48 @@ task.spawn(function()
 			task.wait(BUY_DELAY) -- delay fijo
 		else
 			task.wait(0.4)
+		end
+	end
+end)
+
+--========================
+-- AUTO FARM LOOP
+--========================
+task.spawn(function()
+	while true do
+		if AUTO_FARM and selectedFarmableType then
+			local farmables = getValidFarmables()
+
+			if #farmables > 0 then
+				-- Tomamos SOLO un farmeable
+				local targetModel = farmables[1]
+				local targetId = targetModel.Name
+
+				-- Enviar todas las pets UNA VEZ
+				local payload = {}
+				for _, petId in ipairs(PET_IDS) do
+					payload[petId] = {
+						task = "farm",
+						target_id = targetId
+					}
+				end
+
+				pcall(function()
+					SetPetsTasks:FireServer(payload)
+				end)
+
+				-- Esperar a que el farmeable muera
+				local health = targetModel:FindFirstChild("Health")
+				if health then
+					repeat
+						task.wait(0.5)
+					until health.Value <= 0 or not AUTO_FARM
+				end
+			else
+				task.wait(1)
+			end
+		else
+			task.wait(0.5)
 		end
 	end
 end)
