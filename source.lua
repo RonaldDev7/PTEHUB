@@ -474,6 +474,21 @@ autoBuyToggle.BackgroundColor3 = THEME.INACTIVE
 autoBuyToggle.BorderSizePixel = 0
 Instance.new("UICorner", autoBuyToggle).CornerRadius = UDim.new(0,8)
 
+--========================
+-- AUTO BUY INDICATOR DOT
+--========================
+local autoBuyDot = Instance.new("Frame", autoBuyToggle)
+autoBuyDot.Size = UDim2.new(0,10,0,10)
+autoBuyDot.Position = UDim2.new(1,-16,0.5,-5)
+autoBuyDot.BackgroundColor3 = THEME.INACTIVE
+autoBuyDot.BorderSizePixel = 0
+
+Instance.new("UICorner", autoBuyDot).CornerRadius = UDim.new(1,0)
+
+local autoBuyDotStroke = Instance.new("UIStroke", autoBuyDot)
+autoBuyDotStroke.Thickness = 1
+autoBuyDotStroke.Color = Color3.fromRGB(40,40,40)
+
 addHover(
 	autoBuyToggle,
 	Color3.fromRGB(90,40,40),
@@ -643,4 +658,6 @@ autoBuyToggle.MouseButton1Click:Connect(function()
 			end
 		end)
 	end
+
+	autoBuyDot.BackgroundColor3 = AUTO_BUY and THEME.ACTIVE or THEME.INACTIVE
 end)
