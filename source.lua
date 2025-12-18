@@ -82,18 +82,41 @@ local THEME = {
 
 local function applyTheme()
 	-- Sidebar buttons
-	teleportTab.BackgroundColor3 = THEME.SIDEBAR_IDLE
-	autoTab.BackgroundColor3 = THEME.SIDEBAR_IDLE
-	autoBuyTab.BackgroundColor3 = THEME.SIDEBAR_IDLE
+	for _,btn in pairs({teleportTab, autoTab, autoBuyTab, autoFarmTab}) do
+		btn.BackgroundColor3 = THEME.SIDEBAR_IDLE
+	end
+
+	if currentTab then
+		currentTab.BackgroundColor3 = THEME.SIDEBAR_ACTIVE
+	end
 
 	-- Toggles
-	autoToggle.BackgroundColor3 = AUTO_OPEN and THEME.ACTIVE or THEME.INACTIVE
-	autoBuyToggle.BackgroundColor3 = AUTO_BUY and THEME.ACTIVE or THEME.INACTIVE
+	if autoToggle then
+		autoToggle.BackgroundColor3 = AUTO_OPEN and THEME.ACTIVE or THEME.INACTIVE
+	end
 
-	-- Status dots
-	autoDot.BackgroundColor3 = autoEnabled and THEME.ACTIVE or THEME.INACTIVE
-	autoBuyDot.BackgroundColor3 = autoBuyEnabled and THEME.ACTIVE or THEME.INACTIVE
+	if autoBuyToggle then
+		autoBuyToggle.BackgroundColor3 = AUTO_BUY and THEME.ACTIVE or THEME.INACTIVE
+	end
+
+	if autoFarmToggle then
+		autoFarmToggle.BackgroundColor3 = AUTO_FARM and THEME.ACTIVE or THEME.INACTIVE
+	end
+
+	-- Dots
+	if autoDot then
+		autoDot.BackgroundColor3 = AUTO_OPEN and THEME.ACTIVE or THEME.INACTIVE
+	end
+
+	if autoBuyDot then
+		autoBuyDot.BackgroundColor3 = AUTO_BUY and THEME.ACTIVE or THEME.INACTIVE
+	end
+
+	if autoFarmDot then
+		autoFarmDot.BackgroundColor3 = AUTO_FARM and THEME.ACTIVE or THEME.INACTIVE
+	end
 end
+
 
 --========================
 -- TELEPORTS
@@ -591,9 +614,8 @@ autoFarmDot.Position = UDim2.new(1,-16,0.5,-5)
 autoFarmDot.BackgroundColor3 = THEME.INACTIVE
 autoFarmDot.BorderSizePixel = 0
 Instance.new("UICorner", autoFarmDot).CornerRadius = UDim.new(1,0)
--- 👇 ESTE ES EL BORDE QUE FALTABA
-local autoFarmDot = Instance.new("Frame", autoFarmToggle)
 
+local autoFarmDotStroke = Instance.new("UIStroke", autoFarmDot)
 autoFarmDotStroke.Thickness = 1
 autoFarmDotStroke.Color = Color3.fromRGB(40,40,40)
 
