@@ -988,6 +988,10 @@ elevateChildren(autoFrame, 13)
 elevateChildren(autoBuyFrame, 13)
 elevateChildren(autoFarmFrame, 13)
 
+-- SIDEBAR FIX
+sidebar.ZIndex = 14
+elevateChildren(sidebar, 15)
+
 --========================
 -- AUTO BUY LOGICA
 --========================
