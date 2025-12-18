@@ -58,6 +58,12 @@ local PET_IDS = {
 }
 
 --========================
+-- AUTO FARM FARMEABLE TYPES
+--========================
+local FarmableTypes = {}
+local selectedFarmableType = nil
+
+--========================
 -- THEME
 --========================
 local THEME = {
@@ -266,12 +272,36 @@ local function pulseDot(dot)
 end
 
 --========================
+-- SCAN FARMEABLE TYPES
+--========================
+local function scanFarmableTypes()
+	table.clear(FarmableTypes)
+
+	for _,model in ipairs(FarmeablesFolder:GetChildren()) do
+		if model:IsA("Model") then
+			for _,obj in ipairs(model:GetDescendants()) do
+				if obj:IsA("MeshPart") then
+					if not table.find(FarmableTypes, obj.Name) then
+						table.insert(FarmableTypes, obj.Name)
+					end
+					break
+				end
+			end
+		end
+	end
+
+	table.sort(FarmableTypes)
+	selectedFarmableType = FarmableTypes[1]
+end
+
+--========================
 -- GUI ROOT
 --========================
 local gui = Instance.new("ScreenGui", parentGui)
 gui.Name = "PetTrainerHub"
 gui.ResetOnSpawn = false
 
+scanFarmableTypes()
 --========================
 -- TOGGLE BUTTON (≡)
 --========================
@@ -618,6 +648,71 @@ Instance.new("UICorner", autoFarmDot).CornerRadius = UDim.new(1,0)
 local autoFarmDotStroke = Instance.new("UIStroke", autoFarmDot)
 autoFarmDotStroke.Thickness = 1
 autoFarmDotStroke.Color = Color3.fromRGB(40,40,40)
+
+--========================
+-- AUTO FARM DROPDOWN
+--========================
+local farmLabel = Instance.new("TextLabel", autoFarmFrame)
+farmLabel.Size = UDim2.new(0,220,0,20)
+farmLabel.Position = UDim2.new(0,10,0,55)
+farmLabel.Text = "Tipo de Farmeable"
+farmLabel.Font = Enum.Font.Gotham
+farmLabel.TextSize = 13
+farmLabel.TextColor3 = THEME.SUBTEXT
+farmLabel.BackgroundTransparency = 1
+farmLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+local farmDropdown = Instance.new("TextButton", autoFarmFrame)
+farmDropdown.Size = UDim2.new(0,220,0,34)
+farmDropdown.Position = UDim2.new(0,10,0,80)
+farmDropdown.Text = "Farmear: "..(selectedFarmableType or "None")
+farmDropdown.Font = Enum.Font.Gotham
+farmDropdown.TextSize = 14
+farmDropdown.TextColor3 = THEME.TEXT
+farmDropdown.BackgroundColor3 = Color3.fromRGB(45,45,45)
+farmDropdown.BorderSizePixel = 0
+Instance.new("UICorner", farmDropdown).CornerRadius = UDim.new(0,8)
+
+local farmDropdownStroke = Instance.new("UIStroke", farmDropdown)
+farmDropdownStroke.Thickness = 1
+farmDropdownStroke.Color = Color3.fromRGB(65,65,65)
+
+local farmDropdownOpen = false
+local farmButtons = {}
+
+local fy = 118
+for _,name in ipairs(FarmableTypes) do
+	local opt = Instance.new("TextButton", autoFarmFrame)
+	opt.Size = UDim2.new(0,220,0,24)
+	opt.Position = UDim2.new(0,10,0,fy)
+	opt.Text = name
+	opt.Font = Enum.Font.Gotham
+	opt.TextSize = 13
+	opt.TextColor3 = Color3.new(1,1,1)
+	opt.BackgroundColor3 = Color3.fromRGB(60,60,60)
+	opt.BorderSizePixel = 0
+	opt.Visible = false
+	Instance.new("UICorner", opt).CornerRadius = UDim.new(0,6)
+
+	opt.MouseButton1Click:Connect(function()
+		selectedFarmableType = name
+		farmDropdown.Text = "Farmear: "..name
+		farmDropdownOpen = false
+		for _,b in ipairs(farmButtons) do
+			b.Visible = false
+		end
+	end)
+
+	table.insert(farmButtons, opt)
+	fy += 22
+end
+
+farmDropdown.MouseButton1Click:Connect(function()
+	farmDropdownOpen = not farmDropdownOpen
+	for _,b in ipairs(farmButtons) do
+		b.Visible = farmDropdownOpen
+	end
+end)
 
 autoFarmToggle.MouseButton1Click:Connect(function()
 	AUTO_FARM = not AUTO_FARM
