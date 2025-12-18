@@ -7,7 +7,6 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UIS = game:GetService("UserInputService")
 local CoreGui = game:GetService("CoreGui")
-local TweenService = game:GetService("TweenService")
 
 local player = Players.LocalPlayer
 local Network = ReplicatedStorage:WaitForChild("NetworkEvents")
@@ -132,6 +131,17 @@ local function makeDraggable(obj)
 end
 
 --========================
+-- TWEEN HELPER
+--========================
+local function tween(obj, props, time)
+	TweenService:Create(
+		obj,
+		TweenInfo.new(time or 0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+		props
+	):Play()
+end
+
+--========================
 -- HOVER FX
 --========================
 local function addHover(btn, normal, hover)
@@ -141,17 +151,6 @@ local function addHover(btn, normal, hover)
 	btn.MouseLeave:Connect(function()
 		tween(btn, {BackgroundColor3 = normal}, 0.12)
 	end)
-end
-
---========================
--- TWEEN HELPER
---========================
-local function tween(obj, props, time)
-	TweenService:Create(
-		obj,
-		TweenInfo.new(time or 0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-		props
-	):Play()
 end
 
 --========================
@@ -390,7 +389,7 @@ autoToggle.MouseButton1Click:Connect(function()
 
 	tweenColor(
 		autoToggle,
-		autoToggle.BackgroundColor3 = AUTO_OPEN and THEME.ACTIVE or THEME.INACTIVE,
+		AUTO_OPEN and THEME.ACTIVE or THEME.INACTIVE,
 		0.2
 	)
 end)
@@ -424,7 +423,7 @@ amountBox.Text = tostring(OPEN_AMOUNT)
 amountBox.PlaceholderText = "Ej: 1, 10, 100..."
 amountBox.Font = Enum.Font.Gotham
 amountBox.TextSize = 14
-TextColor3 = THEME.TEXT
+amountBox.TextColor3 = THEME.TEXT
 amountBox.BackgroundColor3 = Color3.fromRGB(45,45,45)
 amountBox.ClearTextOnFocus = false
 amountBox.BorderSizePixel = 0
@@ -452,7 +451,7 @@ autoBuyToggle.Text = "Auto Buy: OFF"
 autoBuyToggle.Font = Enum.Font.GothamBold
 autoBuyToggle.TextSize = 15
 autoBuyToggle.TextColor3 = Color3.new(1,1,1)
-autoToggle.BackgroundColor3 = THEME.INACTIVE
+autoBuyToggle.BackgroundColor3 = THEME.INACTIVE
 autoBuyToggle.BorderSizePixel = 0
 Instance.new("UICorner", autoBuyToggle).CornerRadius = UDim.new(0,8)
 
@@ -502,7 +501,7 @@ dropdown.Position = UDim2.new(0,10,0,70)
 dropdown.Text = "Petball: "..selectedPetballName
 dropdown.Font = Enum.Font.Gotham
 dropdown.TextSize = 14
-TextColor3 = THEME.TEXT
+dropdown.TextColor3 = THEME.TEXT
 dropdown.BackgroundColor3 = Color3.fromRGB(45,45,45)
 Instance.new("UICorner", dropdown).CornerRadius = UDim.new(0,8)
 
@@ -604,6 +603,8 @@ local function buyAllTickets()
 	end
 end
 
+autoBuyToggle.BackgroundColor3 = THEME.INACTIVE
+
 autoBuyToggle.MouseButton1Click:Connect(function()
 	AUTO_BUY = not AUTO_BUY
 	autoBuyToggle.Text = "Auto Buy: "..(AUTO_BUY and "ON" or "OFF")
@@ -611,7 +612,7 @@ autoBuyToggle.MouseButton1Click:Connect(function()
 
 	tweenColor(
 		autoBuyToggle,
-		autoBuyToggle.BackgroundColor3 = AUTO_BUY and THEME.ACTIVE or THEME.INACTIVE,
+		AUTO_BUY and THEME.ACTIVE or THEME.INACTIVE,
 		0.2
 	)
 
