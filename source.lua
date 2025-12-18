@@ -909,7 +909,7 @@ task.spawn(function()
 	while true do
 		if AUTO_OPEN then
 			pcall(function()
-				PurchasePetball:FireServer(selectedPetballId, 1, OPEN_AMOUNT)
+				PurchasePetball:InvokeServer(selectedPetballId, 1, OPEN_AMOUNT)
 			end)
 
 			task.wait(BUY_DELAY) -- delay fijo
