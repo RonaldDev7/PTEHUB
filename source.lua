@@ -19,6 +19,7 @@ local FarmeablesFolder = Workspace:WaitForChild("Farmeables")
 
 local AUTO_FARM = false
 
+print("1")
 --========================
 -- GUI PARENT SAFE
 --========================
@@ -363,6 +364,35 @@ local function scanFarmableTypes()
 	end
 end
 
+local function rebuildFarmDropdown()
+	-- Limpiar opciones anteriores
+	for _,child in ipairs(farmScroll:GetChildren()) do
+		if child:IsA("TextButton") then
+			child:Destroy()
+		end
+	end
+
+	for _,name in ipairs(FarmableTypes) do
+		local opt = Instance.new("TextButton", farmScroll)
+		opt.Size = UDim2.new(1,-8,0,26)
+		opt.Text = name
+		opt.Font = Enum.Font.Gotham
+		opt.TextSize = 13
+		opt.TextColor3 = Color3.new(1,1,1)
+		opt.BackgroundColor3 = Color3.fromRGB(60,60,60)
+		opt.BorderSizePixel = 0
+		opt.ZIndex = 51
+		Instance.new("UICorner", opt).CornerRadius = UDim.new(0,6)
+
+		opt.MouseButton1Click:Connect(function()
+			selectedFarmableType = name
+			farmDropdown.Text = "Farmear: "..name
+			farmDropdownOpen = false
+			farmScroll.Visible = false
+		end)
+	end
+end
+
 --========================
 -- GUI ROOT
 --========================
@@ -372,8 +402,15 @@ gui.ResetOnSpawn = false
 
 task.spawn(function()
 	repeat task.wait(0.3) until #FarmeablesFolder:GetChildren() > 0
+
 	scanFarmableTypes()
+	rebuildFarmDropdown()
+
+	if selectedFarmableType then
+		farmDropdown.Text = "Farmear: "..selectedFarmableType
+	end
 end)
+
 --========================
 -- TOGGLE BUTTON (≡)
 --========================
@@ -783,26 +820,6 @@ Instance.new("UICorner", farmScroll).CornerRadius = UDim.new(0,8)
 
 local scrollLayout = Instance.new("UIListLayout", farmScroll)
 scrollLayout.Padding = UDim.new(0,6)
-
-for _,name in ipairs(FarmableTypes) do
-	local opt = Instance.new("TextButton", farmScroll)
-	opt.Size = UDim2.new(1,-8,0,26)
-	opt.Text = name
-	opt.Font = Enum.Font.Gotham
-	opt.TextSize = 13
-	opt.TextColor3 = Color3.new(1,1,1)
-	opt.BackgroundColor3 = Color3.fromRGB(60,60,60)
-	opt.BorderSizePixel = 0
-	opt.ZIndex = 51
-	Instance.new("UICorner", opt).CornerRadius = UDim.new(0,6)
-
-	opt.MouseButton1Click:Connect(function()
-		selectedFarmableType = name
-		farmDropdown.Text = "Farmear: "..name
-		farmDropdownOpen = false
-		farmScroll.Visible = false
-	end)
-end
 
 scrollLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
 	farmScroll.CanvasSize = UDim2.new(0,0,0,scrollLayout.AbsoluteContentSize.Y + 6)
