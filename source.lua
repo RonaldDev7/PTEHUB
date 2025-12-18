@@ -302,6 +302,8 @@ local function toggleFarmableSelection(name)
 end
 
 local function updateFarmDropdownText()
+	if not farmDropdown then return end
+
 	if #selectedFarmableTypes == 0 then
 		farmDropdown.Text = "Farmear: None"
 	elseif #selectedFarmableTypes == 1 then
@@ -310,6 +312,7 @@ local function updateFarmDropdownText()
 		farmDropdown.Text = "Farmear: "..#selectedFarmableTypes.." seleccionados"
 	end
 end
+
 
 --========================
 -- GUI ROOT
