@@ -677,52 +677,41 @@ local farmDropdownStroke = Instance.new("UIStroke", farmDropdown)
 farmDropdownStroke.Thickness = 1
 farmDropdownStroke.Color = Color3.fromRGB(65,65,65)
 
---========================
--- FARM DROPDOWN SCROLL
---========================
 local farmDropdownOpen = false
+local farmButtons = {}
 
-local farmScroll = Instance.new("ScrollingFrame", autoFarmFrame)
-farmScroll.Size = UDim2.new(0,220,0,140)
-farmScroll.Position = UDim2.new(0,10,0,118)
-farmScroll.CanvasSize = UDim2.new(0,0,0,0)
-farmScroll.ScrollBarImageTransparency = 0
-farmScroll.ScrollBarThickness = 5
-farmScroll.BackgroundColor3 = Color3.fromRGB(45,45,45)
-farmScroll.BorderSizePixel = 0
-farmScroll.Visible = false
-farmScroll.AutomaticCanvasSize = Enum.AutomaticSize.None
-Instance.new("UICorner", farmScroll).CornerRadius = UDim.new(0,8)
-
-local scrollLayout = Instance.new("UIListLayout", farmScroll)
-scrollLayout.Padding = UDim.new(0,6)
-
+local fy = 118
 for _,name in ipairs(FarmableTypes) do
-	local opt = Instance.new("TextButton", farmScroll)
-	opt.Size = UDim2.new(1,-8,0,26)
+	local opt = Instance.new("TextButton", autoFarmFrame)
+	opt.Size = UDim2.new(0,220,0,24)
+	opt.Position = UDim2.new(0,10,0,fy)
 	opt.Text = name
 	opt.Font = Enum.Font.Gotham
 	opt.TextSize = 13
 	opt.TextColor3 = Color3.new(1,1,1)
 	opt.BackgroundColor3 = Color3.fromRGB(60,60,60)
 	opt.BorderSizePixel = 0
+	opt.Visible = false
 	Instance.new("UICorner", opt).CornerRadius = UDim.new(0,6)
 
 	opt.MouseButton1Click:Connect(function()
 		selectedFarmableType = name
 		farmDropdown.Text = "Farmear: "..name
 		farmDropdownOpen = false
-		farmScroll.Visible = false
+		for _,b in ipairs(farmButtons) do
+			b.Visible = false
+		end
 	end)
-end
 
-scrollLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-	farmScroll.CanvasSize = UDim2.new(0,0,0,scrollLayout.AbsoluteContentSize.Y + 6)
-end)
+	table.insert(farmButtons, opt)
+	fy += 22
+end
 
 farmDropdown.MouseButton1Click:Connect(function()
 	farmDropdownOpen = not farmDropdownOpen
-	farmScroll.Visible = farmDropdownOpen
+	for _,b in ipairs(farmButtons) do
+		b.Visible = farmDropdownOpen
+	end
 end)
 
 autoFarmToggle.MouseButton1Click:Connect(function()
