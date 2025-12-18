@@ -291,7 +291,6 @@ local function scanFarmableTypes()
 	end
 
 	table.sort(FarmableTypes)
-	selectedFarmableType = FarmableTypes[1]
 end
 
 local function toggleFarmableSelection(name)
@@ -683,13 +682,15 @@ farmLabel.TextXAlignment = Enum.TextXAlignment.Left
 local farmDropdown = Instance.new("TextButton", autoFarmFrame)
 farmDropdown.Size = UDim2.new(0,220,0,34)
 farmDropdown.Position = UDim2.new(0,10,0,80)
-farmDropdown.Text = "Farmear: "..(selectedFarmableType or "None")
+farmDropdown.Text = "Farmear: None"
 farmDropdown.Font = Enum.Font.Gotham
 farmDropdown.TextSize = 14
 farmDropdown.TextColor3 = THEME.TEXT
 farmDropdown.BackgroundColor3 = Color3.fromRGB(45,45,45)
 farmDropdown.BorderSizePixel = 0
 Instance.new("UICorner", farmDropdown).CornerRadius = UDim.new(0,8)
+
+updateFarmDropdownText()
 
 local farmDropdownStroke = Instance.new("UIStroke", farmDropdown)
 farmDropdownStroke.Thickness = 1
@@ -704,12 +705,12 @@ local farmScroll = Instance.new("ScrollingFrame", autoFarmFrame)
 farmScroll.Size = UDim2.new(0,220,0,140)
 farmScroll.Position = UDim2.new(0,10,0,118)
 farmScroll.CanvasSize = UDim2.new(0,0,0,0)
-farmScroll.ScrollBarImageTransparency = 0
+farmScroll.ScrollBarImageTransparency = 0.25
 farmScroll.ScrollBarThickness = 5
 farmScroll.BackgroundColor3 = Color3.fromRGB(45,45,45)
 farmScroll.BorderSizePixel = 0
 farmScroll.Visible = false
-farmScroll.AutomaticCanvasSize = Enum.AutomaticSize.None
+farmScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
 Instance.new("UICorner", farmScroll).CornerRadius = UDim.new(0,8)
 
 local scrollLayout = Instance.new("UIListLayout", farmScroll)
