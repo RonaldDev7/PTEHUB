@@ -20,7 +20,7 @@ local FarmeablesFolder = Workspace:WaitForChild("Farmeables")
 local AUTO_FARM = false
 local selectedFarmableType = selectedFarmableType or "arbusto"
 
-print("Servicion cargados")
+print("1")
 --========================
 -- GUI PARENT SAFE
 --========================
@@ -304,7 +304,9 @@ local function scanFarmableTypes()
 	end
 
 	table.sort(FarmableTypes)
-	selectedFarmableType = FarmableTypes[1]
+	if #FarmableTypes > 0 then
+		selectedFarmableType = FarmableTypes[1]
+	end
 end
 
 --========================
@@ -313,19 +315,22 @@ end
 local function getValidFarmables()
 	local valid = {}
 
-	for _,folder in ipairs(FarmeablesFolder:GetChildren()) do
-		if folder:IsA("Folder") then
-			for _,model in ipairs(folder:GetChildren()) do
-				if model:IsA("Model") then
-					-- Buscar MeshPart con nombre del farmeable seleccionado
-					local mesh = model:FindFirstChildWhichIsA("MeshPart", true)
-					if mesh and mesh.Name == selectedFarmableType then
-						-- Comprobar vida
-						local health = model:FindFirstChild("Health")
-						if health and health.Value > 0 then
-							table.insert(valid, model)
-						end
-					end
+	for _,model in ipairs(FarmeablesFolder:GetChildren()) do
+		if model:IsA("Model") then
+			-- buscar MeshPart con nombre del tipo seleccionado
+			local found = false
+
+			for _,obj in ipairs(model:GetDescendants()) do
+				if obj:IsA("MeshPart") and obj.Name == selectedFarmableType then
+					found = true
+					break
+				end
+			end
+
+			if found then
+				local health = model:FindFirstChild("Health")
+				if health and health.Value > 0 then
+					table.insert(valid, model)
 				end
 			end
 		end
@@ -942,39 +947,46 @@ end)
 --========================
 task.spawn(function()
 	while true do
-		if AUTO_FARM and selectedFarmableType then
-			local farmables = getValidFarmables()
-
-			if #farmables > 0 then
-				-- Tomamos SOLO un farmeable
-				local targetModel = farmables[1]
-				local targetId = targetModel.Name
-
-				-- Enviar todas las pets UNA VEZ
-				local payload = {}
-				for _, petId in ipairs(PET_IDS) do
-					payload[petId] = {
-						task = "farm",
-						target_id = targetId
-					}
-				end
-
-				pcall(function()
-					SetPetsTasks:FireServer(payload)
-				end)
-
-				-- Esperar a que el farmeable muera
-				local health = targetModel:FindFirstChild("Health")
-				if health then
-					repeat
-						task.wait(0.5)
-					until health.Value <= 0 or not AUTO_FARM
-				end
-			else
-				task.wait(1)
-			end
-		else
+		if not AUTO_FARM or not selectedFarmableType then
+			currentTarget = nil
 			task.wait(0.5)
+			continue
+		end
+
+		-- si no hay target o se destruyó, buscamos uno nuevo
+		if not currentTarget or not currentTarget.Parent then
+			local farmables = getValidFarmables()
+			currentTarget = farmables[1]
+		end
+
+		if currentTarget then
+			local targetId = currentTarget.Name
+
+			-- enviar pets UNA sola vez
+			local payload = {}
+			for _, petId in ipairs(PET_IDS) do
+				payload[petId] = {
+					task = "farm",
+					target_id = targetId
+				}
+			end
+
+			pcall(function()
+				SetPetsTasks:FireServer(payload)
+			end)
+
+			-- esperar a que muera
+			local health = currentTarget:FindFirstChild("Health")
+			if health then
+				repeat
+					task.wait(0.4)
+				until health.Value <= 0 or not AUTO_FARM
+			end
+
+			currentTarget = nil
+			task.wait(0.2)
+		else
+			task.wait(0.6)
 		end
 	end
 end)
