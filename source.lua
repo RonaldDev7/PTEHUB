@@ -62,6 +62,7 @@ local PET_IDS = {
 --========================
 local FarmableTypes = {}
 local selectedFarmableType = nil
+local selectedFarmableTypes = {}
 
 --========================
 -- THEME
@@ -292,6 +293,80 @@ local function scanFarmableTypes()
 
 	table.sort(FarmableTypes)
 	selectedFarmableType = FarmableTypes[1]
+end
+
+--========================
+-- GET VALID FARMEABLES
+--========================
+local function getValidFarmeables()
+	local list = {}
+
+	for _,model in ipairs(FarmeablesFolder:GetChildren()) do
+		if model:IsA("Model") then
+			for _,obj in ipairs(model:GetDescendants()) do
+				if obj:IsA("MeshPart") then
+					if selectedFarmableTypes[obj.Name] then
+						table.insert(list, model)
+					end
+					break
+				end
+			end
+		end
+	end
+
+	return list
+end
+
+local function getFarmableId(model)
+	return model.Name
+end
+
+--========================
+-- MULTI SELECT HELPERS
+--========================
+local function isSelectedFarmable(name)
+	return selectedFarmableTypes[name] == true
+end
+
+local function toggleFarmableSelection(name)
+	if selectedFarmableTypes[name] then
+		selectedFarmableTypes[name] = nil
+	else
+		selectedFarmableTypes[name] = true
+	end
+end
+
+--========================
+-- FARMABLE MULTI SELECT UTILS
+--========================
+local function isFarmableSelected(name)
+	return selectedFarmableTypes[name] == true
+end
+
+local function toggleFarmable(name)
+	if selectedFarmableTypes[name] then
+		selectedFarmableTypes[name] = nil
+	else
+		selectedFarmableTypes[name] = true
+	end
+end
+
+local function getSelectedFarmableText()
+	local list = {}
+
+	for name,_ in pairs(selectedFarmableTypes) do
+		table.insert(list, name)
+	end
+
+	table.sort(list)
+
+	if #list == 0 then
+		return "None"
+	elseif #list <= 2 then
+		return table.concat(list, ", ")
+	else
+		return list[1]..", "..list[2].." (+"..(#list - 2)..")"
+	end
 end
 
 --========================
@@ -709,12 +784,32 @@ for _,name in ipairs(FarmableTypes) do
 	Instance.new("UICorner", opt).CornerRadius = UDim.new(0,6)
 
 	opt.MouseButton1Click:Connect(function()
-		selectedFarmableType = name
-		farmDropdown.Text = "Farmear: "..name
-		farmDropdownOpen = false
-		farmScroll.Visible = false
-	end)
-end
+	toggleFarmableSelection(name)
+
+	-- VISUAL CHECK
+	if isSelectedFarmable(name) then
+		opt.BackgroundColor3 = THEME.ACCENT
+	else
+		opt.BackgroundColor3 = Color3.fromRGB(60,60,60)
+	end
+
+	-- TEXTO RESUMEN
+	local count = 0
+	for _ in pairs(selectedFarmableTypes) do
+		count += 1
+	end
+
+	if count == 0 then
+		farmDropdown.Text = "Farmear: None"
+	elseif count == 1 then
+		for k in pairs(selectedFarmableTypes) do
+			farmDropdown.Text = "Farmear: "..k
+			break
+		end
+	else
+		farmDropdown.Text = "Farmear: "..count.." seleccionados"
+	end
+end)
 
 scrollLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
 	farmScroll.CanvasSize = UDim2.new(0,0,0,scrollLayout.AbsoluteContentSize.Y + 6)
@@ -939,4 +1034,44 @@ autoBuyToggle.MouseLeave:Connect(function()
 		AUTO_BUY and THEME.ACTIVE or THEME.INACTIVE,
 		0.12
 	)
+end)
+
+--========================
+-- AUTO FARM LOOP (PASO 3)
+--========================
+task.spawn(function()
+	while true do
+		if AUTO_FARM then
+			local targets = getValidFarmeables()
+
+			if #targets == 0 then
+				task.wait(1)
+				continue
+			end
+
+			for _,model in ipairs(targets) do
+				if not AUTO_FARM then break end
+				if not model or not model.Parent then continue end
+
+				-- Construir payload
+				local payload = {}
+				for _,petId in ipairs(PET_IDS) do
+					payload[petId] = {
+						task = "farm",
+						target_id = model.Name
+					}
+				end
+
+				-- Enviar pets UNA VEZ
+				SetPetsTasks:FireServer(payload)
+
+				-- Esperar a que el farmeable muera
+				repeat
+					task.wait(0.4)
+				until not model.Parent or not AUTO_FARM
+			end
+		else
+			task.wait(0.5)
+		end
+	end
 end)
