@@ -115,6 +115,18 @@ local function makeDraggable(obj)
 end
 
 --========================
+-- HOVER FX
+--========================
+local function addHover(btn, normal, hover)
+	btn.MouseEnter:Connect(function()
+		btn.BackgroundColor3 = hover
+	end)
+	btn.MouseLeave:Connect(function()
+		btn.BackgroundColor3 = normal
+	end)
+end
+
+--========================
 -- UI SHADOW
 --========================
 local function addShadow(parent, transparency)
@@ -238,6 +250,13 @@ local teleportTab = sidebarButton("Teleport", 12)
 local autoTab = sidebarButton("Auto Open", 58)
 local autoBuyTab = sidebarButton("Auto Buy", 104)
 
+local function setActiveTab(active)
+	for _,btn in pairs({teleportTab, autoTab, autoBuyTab}) do
+		btn.BackgroundColor3 = Color3.fromRGB(40,40,40)
+	end
+	active.BackgroundColor3 = Color3.fromRGB(70,70,70)
+end
+
 --========================
 -- CONTENT FRAMES
 --========================
@@ -261,18 +280,21 @@ autoBuyFrame.BackgroundTransparency = 1
 autoBuyFrame.Visible = false
 
 teleportTab.MouseButton1Click:Connect(function()
+	setActiveTab(teleportTab)
 	teleportFrame.Visible = true
 	autoFrame.Visible = false
 	autoBuyFrame.Visible = false
 end)
 
 autoTab.MouseButton1Click:Connect(function()
+	setActiveTab(autoTab)
 	teleportFrame.Visible = false
 	autoFrame.Visible = true
 	autoBuyFrame.Visible = false
 end)
 
 autoBuyTab.MouseButton1Click:Connect(function()
+	setActiveTab(autoBuyTab)
 	teleportFrame.Visible = false
 	autoFrame.Visible = false
 	autoBuyFrame.Visible = true
@@ -313,6 +335,12 @@ autoToggle.TextSize = 15
 autoToggle.TextColor3 = Color3.new(1,1,1)
 autoToggle.BackgroundColor3 = Color3.fromRGB(90,40,40)
 Instance.new("UICorner", autoToggle).CornerRadius = UDim.new(0,8)
+
+addHover(
+	autoToggle,
+	Color3.fromRGB(90,40,40),
+	Color3.fromRGB(120,60,60)
+)
 
 local autoOpenStroke = Instance.new("UIStroke")
 autoOpenStroke.Parent = autoToggle
@@ -391,6 +419,12 @@ autoBuyToggle.BackgroundColor3 = Color3.fromRGB(90,40,40)
 autoBuyToggle.BorderSizePixel = 0
 Instance.new("UICorner", autoBuyToggle).CornerRadius = UDim.new(0,8)
 
+addHover(
+	autoBuyToggle,
+	Color3.fromRGB(90,40,40),
+	Color3.fromRGB(120,60,60)
+)
+
 local autoBuyStroke = Instance.new("UIStroke")
 autoBuyStroke.Parent = autoBuyToggle
 autoBuyStroke.Thickness = 1
@@ -434,6 +468,12 @@ dropdown.TextSize = 14
 dropdown.TextColor3 = Color3.new(1,1,1)
 dropdown.BackgroundColor3 = Color3.fromRGB(45,45,45)
 Instance.new("UICorner", dropdown).CornerRadius = UDim.new(0,8)
+
+addHover(
+	dropdown,
+	Color3.fromRGB(45,45,45),
+	Color3.fromRGB(70,70,70)
+)
 
 local dropdownStroke = Instance.new("UIStroke")
 dropdownStroke.Parent = dropdown
