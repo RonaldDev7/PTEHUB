@@ -1,6 +1,7 @@
 -- SERVICES
 --========================
 local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -119,11 +120,22 @@ end
 --========================
 local function addHover(btn, normal, hover)
 	btn.MouseEnter:Connect(function()
-		btn.BackgroundColor3 = hover
+		tween(btn, {BackgroundColor3 = hover}, 0.12)
 	end)
 	btn.MouseLeave:Connect(function()
-		btn.BackgroundColor3 = normal
+		tween(btn, {BackgroundColor3 = normal}, 0.12)
 	end)
+end
+
+--========================
+-- TWEEN HELPER
+--========================
+local function tween(obj, props, time)
+	TweenService:Create(
+		obj,
+		TweenInfo.new(time or 0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+		props
+	):Play()
 end
 
 --========================
@@ -216,7 +228,16 @@ mainStroke.Thickness = 1
 mainStroke.Color = Color3.fromRGB(55,55,55)
 
 toggleBtn.MouseButton1Click:Connect(function()
-	main.Visible = not main.Visible
+	if main.Visible then
+		tween(main, {Size = UDim2.new(0,430,0,0)}, 0.18)
+		task.delay(0.18, function()
+			main.Visible = false
+		end)
+	else
+		main.Size = UDim2.new(0,430,0,0)
+		main.Visible = true
+		tween(main, {Size = UDim2.new(0,430,0,310)}, 0.22)
+	end
 end)
 
 --========================
