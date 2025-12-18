@@ -18,14 +18,6 @@ local ClientHeartbeat = player:FindFirstChild("ClientHeartbeat")
 -- GUI PARENT SAFE
 --========================
 local parentGui = CoreGui
-pcall(function()
-	local ok, hui = pcall(function()
-		return gethui()
-	end)
-	if ok and hui then
-		parentGui = hui
-	end
-end)
 
 pcall(function()
 	parentGui.PetTrainerHub:Destroy()
@@ -241,6 +233,18 @@ local function addShadow(parent, transparency)
 end
 
 --========================
+-- UI TWEEN COLOR
+--========================
+local function tweenColor(obj, targetColor, speed)
+	local tween = TweenService:Create(
+		obj,
+		TweenInfo.new(speed or 0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+		{BackgroundColor3 = targetColor}
+	)
+	tween:Play()
+end
+
+--========================
 -- UI HOVER EFFECT
 --========================
 local function applyHover(button, normalColor, hoverColor)
@@ -251,18 +255,6 @@ local function applyHover(button, normalColor, hoverColor)
 	button.MouseLeave:Connect(function()
 		tweenColor(button, normalColor)
 	end)
-end
-
---========================
--- UI TWEEN COLOR
---========================
-local function tweenColor(obj, targetColor, speed)
-	local tween = TweenService:Create(
-		obj,
-		TweenInfo.new(speed or 0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-		{BackgroundColor3 = targetColor}
-	)
-	tween:Play()
 end
 
 --========================
