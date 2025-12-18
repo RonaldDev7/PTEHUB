@@ -20,7 +20,7 @@ local FarmeablesFolder = Workspace:WaitForChild("Farmeables")
 local AUTO_FARM = false
 local selectedFarmableType = selectedFarmableType or "arbusto"
 
-print("1")
+print("10")
 --========================
 -- GUI PARENT SAFE
 --========================
@@ -346,6 +346,7 @@ local gui = Instance.new("ScreenGui", parentGui)
 gui.Name = "PetTrainerHub"
 gui.ResetOnSpawn = false
 
+task.wait(0.2)
 scanFarmableTypes()
 --========================
 -- TOGGLE BUTTON (≡)
@@ -722,7 +723,7 @@ farmLabel.TextXAlignment = Enum.TextXAlignment.Left
 local farmDropdown = Instance.new("TextButton", autoFarmFrame)
 farmDropdown.Size = UDim2.new(0,220,0,34)
 farmDropdown.Position = UDim2.new(0,10,0,80)
-farmDropdown.Text = "Farmear: "..(selectedFarmableType or "None")
+farmDropdown.Text = "Farmear: "..(selectedFarmableType or "Seleccionar")
 farmDropdown.Font = Enum.Font.Gotham
 farmDropdown.TextSize = 14
 farmDropdown.TextColor3 = THEME.TEXT
@@ -942,12 +943,14 @@ task.spawn(function()
 	end
 end)
 
+local currentTarget = nil
+
 --========================
 -- AUTO FARM LOOP
 --========================
 task.spawn(function()
 	while true do
-		if not AUTO_FARM or not selectedFarmableType then
+		if not AUTO_FARM or selectedFarmableType == nil then
 			currentTarget = nil
 			task.wait(0.5)
 			continue
