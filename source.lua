@@ -273,6 +273,17 @@ local function pulseDot(dot)
 end
 
 --========================
+-- ELEVATE UI CHILDREN (FIX ZINDEX GLOBAL)
+--========================
+local function elevateChildren(frame, zIndex)
+	for _,v in ipairs(frame:GetDescendants()) do
+		if v:IsA("GuiObject") then
+			v.ZIndex = zIndex
+		end
+	end
+end
+
+--========================
 -- SCAN FARMEABLE TYPES
 --========================
 local function scanFarmableTypes()
@@ -966,6 +977,16 @@ task.spawn(function()
 		end
 	end
 end)
+
+--========================
+-- FINAL UI ZINDEX FIX
+--========================
+task.wait() -- aseguramos que todo exista
+
+elevateChildren(teleportFrame, 13)
+elevateChildren(autoFrame, 13)
+elevateChildren(autoBuyFrame, 13)
+elevateChildren(autoFarmFrame, 13)
 
 --========================
 -- AUTO BUY LOGICA
