@@ -322,21 +322,6 @@ local function getFarmableId(model)
 end
 
 --========================
--- MULTI SELECT HELPERS
---========================
-local function isSelectedFarmable(name)
-	return selectedFarmableTypes[name] == true
-end
-
-local function toggleFarmableSelection(name)
-	if selectedFarmableTypes[name] then
-		selectedFarmableTypes[name] = nil
-	else
-		selectedFarmableTypes[name] = true
-	end
-end
-
---========================
 -- FARMABLE MULTI SELECT UTILS
 --========================
 local function isFarmableSelected(name)
@@ -784,14 +769,32 @@ for _,name in ipairs(FarmableTypes) do
 	Instance.new("UICorner", opt).CornerRadius = UDim.new(0,6)
 
 	opt.MouseButton1Click:Connect(function()
-	toggleFarmableSelection(name)
+	toggleFarmable(name)
 
 	-- VISUAL CHECK
-	if isSelectedFarmable(name) then
+	if isFarmableSelected(name) then
 		opt.BackgroundColor3 = THEME.ACCENT
 	else
 		opt.BackgroundColor3 = Color3.fromRGB(60,60,60)
 	end
+
+	-- TEXTO RESUMEN
+	local count = 0
+	for _ in pairs(selectedFarmableTypes) do
+		count += 1
+	end
+
+	if count == 0 then
+		farmDropdown.Text = "Farmear: None"
+	elseif count == 1 then
+		for k in pairs(selectedFarmableTypes) do
+			farmDropdown.Text = "Farmear: "..k
+			break
+		end
+	else
+		farmDropdown.Text = "Farmear: "..count.." seleccionados"
+	end
+end)
 
 	-- TEXTO RESUMEN
 	local count = 0
