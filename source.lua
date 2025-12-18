@@ -60,6 +60,11 @@ local THEME = {
 	SUBTEXT = Color3.fromRGB(200, 200, 200)
 }
 
+	-- SIDEBAR
+	SIDEBAR_IDLE = Color3.fromRGB(40,40,40),
+	SIDEBAR_HOVER = Color3.fromRGB(60,60,60),
+	SIDEBAR_ACTIVE = Color3.fromRGB(70,70,70)
+
 --========================
 -- TELEPORTS
 --========================
@@ -285,27 +290,41 @@ local function sidebarButton(text, y)
 	b.Font = Enum.Font.GothamBold
 	b.TextSize = 14
 	b.TextColor3 = Color3.new(1,1,1)
-	b.BackgroundColor3 = THEME.BUTTON
+	b.BackgroundColor3 = THEME.SIDEBAR_IDLE
 	b.BorderSizePixel = 0
 	Instance.new("UICorner", b).CornerRadius = UDim.new(0,8)
-	applyHover(
-	b,
-	Color3.fromRGB(40,40,40),
-	Color3.fromRGB(60,60,60)
-	)
+
+	b.MouseEnter:Connect(function()
+		if currentTab ~= b then
+			tweenColor(b, THEME.SIDEBAR_HOVER)
+		end
+	end)
+
+	b.MouseLeave:Connect(function()
+		if currentTab ~= b then
+			tweenColor(b, THEME.SIDEBAR_IDLE)
+		end
+	end)
+
 	return b
 end
 
 local teleportTab = sidebarButton("Teleport", 12)
 local autoTab = sidebarButton("Auto Open", 58)
 local autoBuyTab = sidebarButton("Auto Buy", 104)
+local currentTab = teleportTab
 
 local function setActiveTab(active)
+	currentTab = active
+
 	for _,btn in pairs({teleportTab, autoTab, autoBuyTab}) do
-		btn.BackgroundColor3 = Color3.fromRGB(40,40,40)
+		btn.BackgroundColor3 = THEME.SIDEBAR_IDLE
 	end
-	active.BackgroundColor3 = Color3.fromRGB(70,70,70)
+
+	active.BackgroundColor3 = THEME.SIDEBAR_ACTIVE
 end
+
+setActiveTab(teleportTab)
 
 --========================
 -- CONTENT FRAMES
