@@ -46,6 +46,22 @@ local selectedPetballName = "Outer Village"
 local selectedPetballId = PETBALLS[selectedPetballName]
 
 --========================
+-- THEME
+--========================
+local THEME = {
+	BG = Color3.fromRGB(54, 19, 84),        -- #361354
+	PANEL = Color3.fromRGB(32, 8, 46),      -- #20082E
+	BUTTON = Color3.fromRGB(21, 19, 84),    -- #151354
+	ACCENT = Color3.fromRGB(137, 31, 194),  -- #891FC2
+
+	ACTIVE = Color3.fromRGB(88, 194, 31),   -- #58C21F
+	INACTIVE = Color3.fromRGB(158, 27, 52), -- #9E1B34
+
+	TEXT = Color3.fromRGB(240, 240, 240),
+	SUBTEXT = Color3.fromRGB(200, 200, 200)
+}
+
+--========================
 -- TELEPORTS
 --========================
 local Teleports = {
@@ -214,7 +230,7 @@ makeDraggable(toggleBtn)
 local main = Instance.new("Frame", gui)
 main.Size = UDim2.new(0,430,0,310)
 main.Position = UDim2.new(0.5,-215,0.5,-155)
-main.BackgroundColor3 = Color3.fromRGB(18,18,18)
+main.BackgroundColor3 = THEME.BG
 main.BorderSizePixel = 0
 Instance.new("UICorner", main).CornerRadius = UDim.new(0,14)
 
@@ -245,7 +261,7 @@ end)
 --========================
 local sidebar = Instance.new("Frame", main)
 sidebar.Size = UDim2.new(0,120,1,0)
-sidebar.BackgroundColor3 = Color3.fromRGB(22,22,22)
+sidebar.BackgroundColor3 = THEME.PANEL
 Instance.new("UICorner", sidebar).CornerRadius = UDim.new(0,14)
 
 local function sidebarButton(text, y)
@@ -256,7 +272,7 @@ local function sidebarButton(text, y)
 	b.Font = Enum.Font.GothamBold
 	b.TextSize = 14
 	b.TextColor3 = Color3.new(1,1,1)
-	b.BackgroundColor3 = Color3.fromRGB(40,40,40)
+	b.BackgroundColor3 = THEME.BUTTON
 	b.BorderSizePixel = 0
 	Instance.new("UICorner", b).CornerRadius = UDim.new(0,8)
 	applyHover(
@@ -333,7 +349,7 @@ for name,cf in pairs(Teleports) do
 	b.Font = Enum.Font.GothamBold
 	b.TextSize = 15
 	b.TextColor3 = Color3.new(1,1,1)
-	b.BackgroundColor3 = Color3.fromRGB(45,45,45)
+	b.BackgroundColor3 = THEME.BUTTON
 	b.BorderSizePixel = 0
 	Instance.new("UICorner", b).CornerRadius = UDim.new(0,8)
 
@@ -354,7 +370,7 @@ autoToggle.Text = "Auto Open: OFF"
 autoToggle.Font = Enum.Font.GothamBold
 autoToggle.TextSize = 15
 autoToggle.TextColor3 = Color3.new(1,1,1)
-autoToggle.BackgroundColor3 = Color3.fromRGB(90,40,40)
+autoToggle.BackgroundColor3 = THEME.INACTIVE
 Instance.new("UICorner", autoToggle).CornerRadius = UDim.new(0,8)
 
 addHover(
@@ -374,7 +390,7 @@ autoToggle.MouseButton1Click:Connect(function()
 
 	tweenColor(
 		autoToggle,
-		AUTO_OPEN and Color3.fromRGB(40,90,40) or Color3.fromRGB(90,40,40),
+		autoToggle.BackgroundColor3 = AUTO_OPEN and THEME.ACTIVE or THEME.INACTIVE,
 		0.2
 	)
 end)
@@ -394,7 +410,7 @@ amountLabel.Position = UDim2.new(0,10,0,115)
 amountLabel.Text = "Cantidad a abrir:"
 amountLabel.Font = Enum.Font.Gotham
 amountLabel.TextSize = 13
-amountLabel.TextColor3 = Color3.fromRGB(200,200,200)
+amountLabel.TextColor3 = THEME.SUBTEXT
 amountLabel.BackgroundTransparency = 1
 amountLabel.TextXAlignment = Enum.TextXAlignment.Left
 
@@ -408,7 +424,7 @@ amountBox.Text = tostring(OPEN_AMOUNT)
 amountBox.PlaceholderText = "Ej: 1, 10, 100..."
 amountBox.Font = Enum.Font.Gotham
 amountBox.TextSize = 14
-amountBox.TextColor3 = Color3.new(1,1,1)
+TextColor3 = THEME.TEXT
 amountBox.BackgroundColor3 = Color3.fromRGB(45,45,45)
 amountBox.ClearTextOnFocus = false
 amountBox.BorderSizePixel = 0
@@ -425,7 +441,7 @@ autoBuyTitle.Position = UDim2.new(0,10,0,10)
 autoBuyTitle.Text = "🛒 Auto Buy (Tickets)"
 autoBuyTitle.Font = Enum.Font.GothamBold
 autoBuyTitle.TextSize = 16
-autoBuyTitle.TextColor3 = Color3.new(1,1,1)
+autoBuyTitle.TextColor3 = THEME.TEXT
 autoBuyTitle.BackgroundTransparency = 1
 autoBuyTitle.TextXAlignment = Enum.TextXAlignment.Left
 
@@ -436,7 +452,7 @@ autoBuyToggle.Text = "Auto Buy: OFF"
 autoBuyToggle.Font = Enum.Font.GothamBold
 autoBuyToggle.TextSize = 15
 autoBuyToggle.TextColor3 = Color3.new(1,1,1)
-autoBuyToggle.BackgroundColor3 = Color3.fromRGB(90,40,40)
+autoToggle.BackgroundColor3 = THEME.INACTIVE
 autoBuyToggle.BorderSizePixel = 0
 Instance.new("UICorner", autoBuyToggle).CornerRadius = UDim.new(0,8)
 
@@ -463,7 +479,7 @@ autoBuyStatus.Position = UDim2.new(0,10,0,110)
 autoBuyStatus.Text = "Estado: Inactivo"
 autoBuyStatus.Font = Enum.Font.Gotham
 autoBuyStatus.TextSize = 13
-autoBuyStatus.TextColor3 = Color3.fromRGB(200,200,200)
+autoBuyStatus.TextColor3 = THEME.SUBTEXT
 autoBuyStatus.BackgroundTransparency = 1
 autoBuyStatus.TextXAlignment = Enum.TextXAlignment.Left
 
@@ -486,7 +502,7 @@ dropdown.Position = UDim2.new(0,10,0,70)
 dropdown.Text = "Petball: "..selectedPetballName
 dropdown.Font = Enum.Font.Gotham
 dropdown.TextSize = 14
-dropdown.TextColor3 = Color3.new(1,1,1)
+TextColor3 = THEME.TEXT
 dropdown.BackgroundColor3 = Color3.fromRGB(45,45,45)
 Instance.new("UICorner", dropdown).CornerRadius = UDim.new(0,8)
 
@@ -595,7 +611,7 @@ autoBuyToggle.MouseButton1Click:Connect(function()
 
 	tweenColor(
 		autoBuyToggle,
-		AUTO_BUY and Color3.fromRGB(40,90,40) or Color3.fromRGB(90,40,40),
+		autoBuyToggle.BackgroundColor3 = AUTO_BUY and THEME.ACTIVE or THEME.INACTIVE,
 		0.2
 	)
 
