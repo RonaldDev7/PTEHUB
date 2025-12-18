@@ -19,7 +19,12 @@ local ClientHeartbeat = player:FindFirstChild("ClientHeartbeat")
 --========================
 local parentGui = CoreGui
 pcall(function()
-	if gethui then parentGui = gethui() end
+	local ok, hui = pcall(function()
+		return gethui()
+	end)
+	if ok and hui then
+		parentGui = hui
+	end
 end)
 
 pcall(function()
