@@ -349,7 +349,6 @@ local function setActiveTab(active)
 	for _,btn in pairs({teleportTab, autoTab, autoBuyTab, autoFarmTab}) do
 		btn.BackgroundColor3 = THEME.SIDEBAR_IDLE
 	end
-
 	active.BackgroundColor3 = THEME.SIDEBAR_ACTIVE
 end
 
@@ -387,6 +386,7 @@ teleportTab.MouseButton1Click:Connect(function()
 	teleportFrame.Visible = true
 	autoFrame.Visible = false
 	autoBuyFrame.Visible = false
+	autoFarmFrame.Visible = false
 
 	applyTheme()
 end)
@@ -396,6 +396,7 @@ autoTab.MouseButton1Click:Connect(function()
 	teleportFrame.Visible = false
 	autoFrame.Visible = true
 	autoBuyFrame.Visible = false
+	autoFarmFrame.Visible = false
 
 	applyTheme()
 end)
@@ -405,6 +406,7 @@ autoBuyTab.MouseButton1Click:Connect(function()
 	teleportFrame.Visible = false
 	autoFrame.Visible = false
 	autoBuyFrame.Visible = true
+	autoFarmFrame.Visible = false
 
 	applyTheme()
 end)
@@ -589,6 +591,11 @@ autoFarmDot.Position = UDim2.new(1,-16,0.5,-5)
 autoFarmDot.BackgroundColor3 = THEME.INACTIVE
 autoFarmDot.BorderSizePixel = 0
 Instance.new("UICorner", autoFarmDot).CornerRadius = UDim.new(1,0)
+-- 👇 ESTE ES EL BORDE QUE FALTABA
+local autoFarmDot = Instance.new("Frame", autoFarmToggle)
+
+autoFarmDotStroke.Thickness = 1
+autoFarmDotStroke.Color = Color3.fromRGB(40,40,40)
 
 autoFarmToggle.MouseButton1Click:Connect(function()
 	AUTO_FARM = not AUTO_FARM
