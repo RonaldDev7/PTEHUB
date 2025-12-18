@@ -65,6 +65,22 @@ local THEME = {
 	SIDEBAR_ACTIVE = Color3.fromRGB(70,70,70)
 
 }
+
+local function applyTheme()
+	-- Sidebar buttons
+	teleportTab.BackgroundColor3 = THEME.SIDEBAR_IDLE
+	autoTab.BackgroundColor3 = THEME.SIDEBAR_IDLE
+	autoBuyTab.BackgroundColor3 = THEME.SIDEBAR_IDLE
+
+	-- Toggles
+	autoToggle.BackgroundColor3 = autoEnabled and THEME.ACTIVE or THEME.INACTIVE
+	autoBuyToggle.BackgroundColor3 = autoBuyEnabled and THEME.ACTIVE or THEME.INACTIVE
+
+	-- Status dots
+	autoDot.BackgroundColor3 = autoEnabled and THEME.ACTIVE or THEME.INACTIVE
+	autoBuyDot.BackgroundColor3 = autoBuyEnabled and THEME.ACTIVE or THEME.INACTIVE
+end
+
 --========================
 -- TELEPORTS
 --========================
@@ -351,6 +367,8 @@ teleportTab.MouseButton1Click:Connect(function()
 	teleportFrame.Visible = true
 	autoFrame.Visible = false
 	autoBuyFrame.Visible = false
+
+	applyTheme()
 end)
 
 autoTab.MouseButton1Click:Connect(function()
@@ -358,6 +376,8 @@ autoTab.MouseButton1Click:Connect(function()
 	teleportFrame.Visible = false
 	autoFrame.Visible = true
 	autoBuyFrame.Visible = false
+
+	applyTheme()
 end)
 
 autoBuyTab.MouseButton1Click:Connect(function()
@@ -365,6 +385,8 @@ autoBuyTab.MouseButton1Click:Connect(function()
 	teleportFrame.Visible = false
 	autoFrame.Visible = false
 	autoBuyFrame.Visible = true
+
+	applyTheme()
 end)
 
 --========================
