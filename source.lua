@@ -14,6 +14,11 @@ local PurchasePetball = Network:WaitForChild("PURCHASE_PETBALL")
 
 local ClientHeartbeat = player:FindFirstChild("ClientHeartbeat")
 
+-- Verificaciones de remotos
+if not PurchasePetball then warn("PurchasePetball remoto no encontrado") end
+if not Network:FindFirstChild("SET_PETS_TASKS") then warn("SET_PETS_TASKS remoto no encontrado") end
+if not Network:FindFirstChild("PURCHASE_SHOP_STOCK") then warn("PURCHASE_SHOP_STOCK remoto no encontrado") end
+
 --========================
 -- GUI PARENT SAFE
 --========================
@@ -265,12 +270,12 @@ end
 -- DOT PULSE EFFECT
 --========================
 local function pulseDot(dot)
-	task.spawn(function()
+	spawn(function()
 		while dot:GetAttribute("Active") do
 			tween(dot, {Size = UDim2.new(0,12,0,12)}, 0.25)
-			task.wait(0.25)
+			wait(0.25)
 			tween(dot, {Size = UDim2.new(0,10,0,10)}, 0.25)
-			task.wait(0.25)
+			wait(0.25)
 		end
 	end)
 end
@@ -278,6 +283,13 @@ end
 --========================
 -- SCAN FARMEABLE TYPES
 --========================
+local function tableFind(tbl, value)
+	for i, v in ipairs(tbl) do
+		if v == value then return i end
+	end
+	return nil
+end
+
 local function scanFarmableTypes()
 	table.clear(FarmableTypes)
 
@@ -285,7 +297,7 @@ local function scanFarmableTypes()
 		if model:IsA("Model") then
 			for _,obj in ipairs(model:GetDescendants()) do
 				if obj:IsA("MeshPart") then
-					if not table.find(FarmableTypes, obj.Name) then
+					if not tableFind(FarmableTypes, obj.Name) then
 						table.insert(FarmableTypes, obj.Name)
 					end
 					break
@@ -408,7 +420,7 @@ mainStroke.Color = Color3.fromRGB(55,55,55)
 toggleBtn.MouseButton1Click:Connect(function()
 	if main.Visible then
 		tween(main, {Size = UDim2.new(0,430,0,0)}, 0.18)
-		task.delay(0.18, function()
+		delay(0.18, function()
 			main.Visible = false
 		end)
 	else
@@ -970,16 +982,16 @@ end)
 --========================
 -- AUTO OPEN LOOP (FIXED)
 --========================
-task.spawn(function()
+spawn(function()
 	while true do
 		if AUTO_OPEN then
 			pcall(function()
 				PurchasePetball:InvokeServer(selectedPetballId, 1, OPEN_AMOUNT)
 			end)
 
-			task.wait(BUY_DELAY) -- delay fijo
+			wait(BUY_DELAY) -- delay fijo
 		else
-			task.wait(0.4)
+			wait(0.4)
 		end
 	end
 end)
@@ -995,7 +1007,7 @@ local function buyAllTickets()
 			pcall(function()
 				BuyRemote:InvokeServer(item.resource, 1)
 			end)
-			task.wait(0.25)
+			wait(0.25)
 		end
 	end
 end
@@ -1014,10 +1026,10 @@ autoBuyToggle.MouseButton1Click:Connect(function()
 	)
 
 	if AUTO_BUY then
-		task.spawn(function()
+		spawn(function()
 			while AUTO_BUY do
 				buyAllTickets()
-				task.wait(5)
+				wait(5)
 			end
 		end)
 	end
@@ -1049,13 +1061,13 @@ end)
 --========================
 -- AUTO FARM LOOP (PASO 3)
 --========================
-task.spawn(function()
+spawn(function()
 	while true do
 		if AUTO_FARM then
 			local targets = getValidFarmeables()
 
 			if #targets == 0 then
-				task.wait(1)
+				wait(1)
 				continue
 			end
 
@@ -1072,16 +1084,18 @@ task.spawn(function()
 					}
 				end
 
-				-- Enviar pets UNA VEZ
-				SetPetsTasks:FireServer(payload)
+				-- Enviar pets UNA VEZ (envuelto en pcall para evitar errores)
+				pcall(function()
+					SetPetsTasks:FireServer(payload)
+				end)
 
 				-- Esperar a que el farmeable muera
 				repeat
-					task.wait(0.4)
+					wait(0.4)
 				until not model.Parent or not AUTO_FARM
 			end
 		else
-			task.wait(0.5)
+			wait(0.5)
 		end
 	end
 end)
