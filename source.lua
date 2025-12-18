@@ -61,7 +61,7 @@ local PET_IDS = {
 -- AUTO FARM FARMEABLE TYPES
 --========================
 local FarmableTypes = {}
-local selectedFarmableType = nil
+local selectedFarmableTypes = {}
 
 --========================
 -- THEME
@@ -292,6 +292,24 @@ local function scanFarmableTypes()
 
 	table.sort(FarmableTypes)
 	selectedFarmableType = FarmableTypes[1]
+end
+
+local function toggleFarmableSelection(name)
+	if table.find(selectedFarmableTypes, name) then
+		table.remove(selectedFarmableTypes, table.find(selectedFarmableTypes, name))
+	else
+		table.insert(selectedFarmableTypes, name)
+	end
+end
+
+local function updateFarmDropdownText()
+	if #selectedFarmableTypes == 0 then
+		farmDropdown.Text = "Farmear: None"
+	elseif #selectedFarmableTypes == 1 then
+		farmDropdown.Text = "Farmear: "..selectedFarmableTypes[1]
+	else
+		farmDropdown.Text = "Farmear: "..#selectedFarmableTypes.." seleccionados"
+	end
 end
 
 --========================
@@ -709,12 +727,18 @@ for _,name in ipairs(FarmableTypes) do
 	Instance.new("UICorner", opt).CornerRadius = UDim.new(0,6)
 
 	opt.MouseButton1Click:Connect(function()
-		selectedFarmableType = name
-		farmDropdown.Text = "Farmear: "..name
-		farmDropdownOpen = false
-		farmScroll.Visible = false
-	end)
-end
+	toggleFarmableSelection(name)
+
+	-- feedback visual
+	if table.find(selectedFarmableTypes, name) then
+		tweenColor(opt, THEME.ACTIVE, 0.15)
+	else
+		tweenColor(opt, Color3.fromRGB(60,60,60), 0.15)
+	end
+
+	updateFarmDropdownText()
+end)
+
 
 scrollLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
 	farmScroll.CanvasSize = UDim2.new(0,0,0,scrollLayout.AbsoluteContentSize.Y + 6)
@@ -723,6 +747,18 @@ end)
 farmDropdown.MouseButton1Click:Connect(function()
 	farmDropdownOpen = not farmDropdownOpen
 	farmScroll.Visible = farmDropdownOpen
+
+	if farmDropdownOpen then
+		for _,btn in ipairs(farmScroll:GetChildren()) do
+			if btn:IsA("TextButton") then
+				if table.find(selectedFarmableTypes, btn.Text) then
+					btn.BackgroundColor3 = THEME.ACTIVE
+				else
+					btn.BackgroundColor3 = Color3.fromRGB(60,60,60)
+				end
+			end
+		end
+	end
 end)
 
 autoFarmToggle.MouseButton1Click:Connect(function()
