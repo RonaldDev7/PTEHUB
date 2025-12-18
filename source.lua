@@ -382,7 +382,8 @@ autoDot.Size = UDim2.new(0,10,0,10)
 autoDot.Position = UDim2.new(1,-16,0.5,-5)
 autoDot.BackgroundColor3 = THEME.INACTIVE
 autoDot.BorderSizePixel = 0
-
+autoDot.ZIndex = 5
+autoToggle.ZIndex = 1
 Instance.new("UICorner", autoDot).CornerRadius = UDim.new(1,0)
 
 local dotStroke = Instance.new("UIStroke", autoDot)
@@ -486,7 +487,8 @@ autoBuyDot.Size = UDim2.new(0,10,0,10)
 autoBuyDot.Position = UDim2.new(1,-16,0.5,-5)
 autoBuyDot.BackgroundColor3 = THEME.INACTIVE
 autoBuyDot.BorderSizePixel = 0
-
+autoBuyDot.ZIndex = 5
+autoBuyToggle.ZIndex = 1
 Instance.new("UICorner", autoBuyDot).CornerRadius = UDim.new(1,0)
 
 local autoBuyDotStroke = Instance.new("UIStroke", autoBuyDot)
