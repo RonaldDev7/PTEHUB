@@ -20,6 +20,7 @@ local FarmeablesFolder = Workspace:WaitForChild("Farmeables")
 local AUTO_FARM = false
 local selectedFarmableType = selectedFarmableType or "arbusto"
 
+print("Servicion cargados")
 --========================
 -- GUI PARENT SAFE
 --========================
