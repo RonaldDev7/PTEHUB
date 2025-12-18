@@ -59,10 +59,11 @@ local THEME = {
 	TEXT = Color3.fromRGB(240, 240, 240),
 	SUBTEXT = Color3.fromRGB(200, 200, 200),
 
-	-- SIDEBAR
-	SIDEBAR_IDLE = Color3.fromRGB(40,40,40),
-	SIDEBAR_HOVER = Color3.fromRGB(60,60,60),
-	SIDEBAR_ACTIVE = Color3.fromRGB(70,70,70)
+	-- SIDEBAR (PALETA PERSONALIZADA)
+	SIDEBAR_IDLE   = Color3.fromRGB(32, 8, 46),   -- #20082E
+	SIDEBAR_HOVER  = Color3.fromRGB(54, 19, 84),  -- #361354
+	SIDEBAR_ACTIVE = Color3.fromRGB(137, 31, 194) -- #891FC2
+
 
 }
 
