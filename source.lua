@@ -279,9 +279,7 @@ end
 -- SCAN FARMEABLE TYPES
 --========================
 local function scanFarmableTypes()
-	for k in pairs(FarmableTypes) do
-		FarmableTypes[k] = nil
-	end
+	table.clear(FarmableTypes)
 
 	for _,model in ipairs(FarmeablesFolder:GetChildren()) do
 		if model:IsA("Model") then
