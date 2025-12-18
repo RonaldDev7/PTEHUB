@@ -196,6 +196,20 @@ local function tweenColor(obj, targetColor, speed)
 end
 
 --========================
+-- DOT PULSE EFFECT
+--========================
+local function pulseDot(dot)
+	task.spawn(function()
+		while dot:GetAttribute("Active") do
+			tween(dot, {Size = UDim2.new(0,12,0,12)}, 0.25)
+			task.wait(0.25)
+			tween(dot, {Size = UDim2.new(0,10,0,10)}, 0.25)
+			task.wait(0.25)
+		end
+	end)
+end
+
+--========================
 -- GUI ROOT
 --========================
 local gui = Instance.new("ScreenGui", parentGui)
@@ -414,6 +428,11 @@ autoToggle.MouseButton1Click:Connect(function()
 
 	autoDot.BackgroundColor3 = AUTO_OPEN and THEME.ACTIVE or THEME.INACTIVE
 
+	autoDot:SetAttribute("Active", AUTO_OPEN)
+
+	if AUTO_OPEN then
+		pulseDot(autoDot)
+	end
 end)
 
 applyHover(
@@ -666,4 +685,10 @@ autoBuyToggle.MouseButton1Click:Connect(function()
 	end
 
 	autoBuyDot.BackgroundColor3 = AUTO_BUY and THEME.ACTIVE or THEME.INACTIVE
+
+	autoBuyDot:SetAttribute("Active", AUTO_BUY)
+
+	if AUTO_BUY then
+		pulseDot(autoBuyDot)
+	end
 end)
