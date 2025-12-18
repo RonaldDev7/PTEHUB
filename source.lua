@@ -18,9 +18,7 @@ local Workspace = game:GetService("Workspace")
 local FarmeablesFolder = Workspace:WaitForChild("Farmeables")
 
 local AUTO_FARM = false
-local selectedFarmableType = selectedFarmableType or "arbusto"
 
-print("20")
 --========================
 -- GUI PARENT SAFE
 --========================
@@ -39,6 +37,7 @@ end)
 local AUTO_OPEN = false
 local BUY_DELAY = 3
 local OPEN_AMOUNT = 1 -- cantidad de petballs a abrir por ciclo
+local selectedFarmableType = nil
 
 local PETBALLS = {
 	["Outer Village"]     = 0,
@@ -52,13 +51,17 @@ local selectedPetballName = "Outer Village"
 local selectedPetballId = PETBALLS[selectedPetballName]
 
 -- AUTO FARM CONFIG
-local FARM_DELAY = 12
-
 local SetPetsTasks = Network:WaitForChild("SET_PETS_TASKS")
 
 local PET_IDS = {
 	"7183","7606","7605","7090","6980","7607"
 }
+
+--========================
+-- AUTO FARM AREA
+--========================
+local AREA_MIN = Vector3.new(1043.88, 0, -632.85)
+local AREA_MAX = Vector3.new(557.32, 0, -857.58)
 
 --========================
 -- AUTO FARM FARMEABLE TYPES
@@ -143,23 +146,75 @@ local function getHRP()
 end
 
 --========================
--- FORCE PET ENTITY REFRESH (CRÍTICO)
+-- AUTO FARM CORE
 --========================
-local function ForcePetEntityRefresh()
-	local char = player.Character
-	if not char then return end
 
-	local hrp = char:FindFirstChild("HumanoidRootPart")
-	if not hrp then return end
-
-	local original = hrp.CFrame
-
-	-- micro re-stream (no visible)
-	hrp.CFrame = original + Vector3.new(0, 0.15, 0)
-	RunService.Heartbeat:Wait()
-	RunService.Heartbeat:Wait()
-	hrp.CFrame = original
+local function isInsideArea(pos)
+	return pos.X >= math.min(AREA_MIN.X, AREA_MAX.X)
+	    and pos.X <= math.max(AREA_MIN.X, AREA_MAX.X)
+	    and pos.Z >= math.min(AREA_MIN.Z, AREA_MAX.Z)
+	    and pos.Z <= math.max(AREA_MIN.Z, AREA_MAX.Z)
 end
+
+local function farmableHasType(model, typeName)
+	for _,obj in ipairs(model:GetDescendants()) do
+		if obj:IsA("MeshPart") and obj.Name == typeName then
+			return true
+		end
+	end
+	return false
+end
+
+local function buildFarmPayload(targetId)
+	local payload = {}
+	for _, petId in ipairs(PET_IDS) do
+		payload[petId] = {
+			task = "farm",
+			target_id = tostring(targetId)
+		}
+	end
+	return payload
+end
+
+local function sendPetsToFarm(targetId)
+	SetPetsTasks:FireServer(buildFarmPayload(targetId))
+end
+
+local function farmableExists(targetId)
+	return FarmeablesFolder:FindFirstChild(tostring(targetId)) ~= nil
+end
+
+local function getClosestFarmable()
+	local hrp = getHRP()
+	local closest
+	local shortest = math.huge
+
+	for _,model in ipairs(FarmeablesFolder:GetChildren()) do
+		local pp = model.PrimaryPart or model:FindFirstChildWhichIsA("BasePart")
+		if model:IsA("Model") and pp then
+
+
+			if not isInsideArea(pp.Position) then
+				continue
+			end
+
+			local dist = (pp.Position - hrp.Position).Magnitude
+
+
+			if selectedFarmableType and not farmableHasType(model, selectedFarmableType) then
+				continue
+			end
+
+			if dist < shortest then
+				shortest = dist
+				closest = model
+			end
+		end
+	end
+
+	return closest
+end
+
 --========================
 -- DRAG FUNCTION
 --========================
@@ -297,7 +352,6 @@ local function scanFarmableTypes()
 					if not table.find(FarmableTypes, obj.Name) then
 						table.insert(FarmableTypes, obj.Name)
 					end
-					break
 				end
 			end
 		end
@@ -310,32 +364,16 @@ local function scanFarmableTypes()
 end
 
 --========================
--- GET VALID FARMEABLES
---========================
-local function getValidFarmables()
-	local valid = {}
-
-	for _,model in ipairs(FarmeablesFolder:GetChildren()) do
-		if model:IsA("Model") then
-			local health = model:FindFirstChild("Health", true)
-			if health and health.Value > 0 then
-				table.insert(valid, model)
-			end
-		end
-	end
-
-	return valid
-end
-
---========================
 -- GUI ROOT
 --========================
 local gui = Instance.new("ScreenGui", parentGui)
 gui.Name = "PetTrainerHub"
 gui.ResetOnSpawn = false
 
-task.wait(0.2)
-scanFarmableTypes()
+task.spawn(function()
+	repeat task.wait(0.3) until #FarmeablesFolder:GetChildren() > 0
+	scanFarmableTypes()
+end)
 --========================
 -- TOGGLE BUTTON (≡)
 --========================
@@ -931,79 +969,6 @@ task.spawn(function()
 	end
 end)
 
-local currentTarget = nil
-
---========================
--- GET FARMEABLE ID (REAL)
---========================
-local function getFarmableId(model)
-	-- 1. Attribute
-	local attr = model:GetAttribute("Id") or model:GetAttribute("ID")
-	if attr then
-		return tostring(attr)
-	end
-
-	-- 2. StringValue / IntValue
-	for _,v in ipairs(model:GetChildren()) do
-		if v:IsA("StringValue") or v:IsA("IntValue") then
-			if v.Name:lower():find("id") then
-				return tostring(v.Value)
-			end
-		end
-	end
-
-	-- 3. Fallback (último recurso)
-	return model.Name
-end
-
-local function waitForFarmeableDestroyed(targetId)
-    local model = FarmeablesFolder:FindFirstChild(tostring(targetId))
-    if not model then
-        return
-    end
-
-    model.AncestryChanged:Wait()
-end
-
---========================
--- AUTO FARM LOOP
---========================
-task.spawn(function()
-    local index = 1
-
-    while true do
-        if AUTO_FARM then
-            local targetId = FARMABLE_IDS[index]
-            if not targetId then
-                index = 1
-                task.wait(1)
-                continue
-            end
-
-            -- Verificar que exista
-            local farmeable = FarmeablesFolder:FindFirstChild(tostring(targetId))
-            if not farmeable then
-                index += 1
-                continue
-            end
-
-            -- Enviar pets UNA SOLA VEZ
-            sendPetsToFarm(targetId)
-
-            -- ESPERAR a que muera
-            waitForFarmeableDestroyed(targetId)
-
-            -- Pasar al siguiente
-            index += 1
-            if index > #FARMABLE_IDS then
-                index = 1
-            end
-        else
-            task.wait(0.5)
-        end
-    end
-end)
-
 --========================
 -- FINAL UI ZINDEX FIX
 --========================
@@ -1078,4 +1043,34 @@ autoBuyToggle.MouseLeave:Connect(function()
 		AUTO_BUY and THEME.ACTIVE or THEME.INACTIVE,
 		0.12
 	)
+end)
+
+--========================
+-- AUTO FARM LOOP (FINAL)
+--========================
+task.spawn(function()
+	while true do
+		if not AUTO_FARM then
+			task.wait(0.5)
+			continue
+		end
+
+		local farmable = getClosestFarmable()
+		if not farmable then
+			task.wait(0.5)
+			continue
+		end
+
+		local targetId = farmable.Name
+
+		-- Enviar pets una sola vez
+		sendPetsToFarm(targetId)
+
+		-- Esperar a que lo destruyan
+		while farmableExists(targetId) and AUTO_FARM do
+			task.wait(0.4)
+		end
+
+		task.wait(0.2)
+	end
 end)
