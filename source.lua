@@ -757,6 +757,10 @@ Instance.new("UICorner", farmScroll).CornerRadius = UDim.new(0,8)
 local scrollLayout = Instance.new("UIListLayout", farmScroll)
 scrollLayout.Padding = UDim.new(0,6)
 
+print("DEBUG toggleFarmable:", toggleFarmable)
+print("DEBUG isFarmableSelected:", isFarmableSelected)
+print("DEBUG selectedFarmableTypes:", selectedFarmableTypes)
+
 for _,name in ipairs(FarmableTypes) do
 	local opt = Instance.new("TextButton", farmScroll)
 	opt.Size = UDim2.new(1,-8,0,26)
