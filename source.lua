@@ -37,7 +37,7 @@ end)
 --========================
 local AUTO_OPEN = false
 local BUY_DELAY = 3
-local OPEN_AMOUNT = 1-- cantidad de petballs a abrir por ciclo
+local OPEN_AMOUNT = 1 -- cantidad de petballs a abrir por ciclo
 
 local PETBALLS = {
 	["Outer Village"]     = 0,
@@ -51,11 +51,7 @@ local selectedPetballName = "Outer Village"
 local selectedPetballId = PETBALLS[selectedPetballName]
 
 -- AUTO FARM CONFIG
-local AUTO_FARM = false
 local FARM_DELAY = 12
-
-local Workspace = game:GetService("Workspace")
-local FarmeablesFolder = Workspace:WaitForChild("Farmeables")
 
 local SetPetsTasks = Network:WaitForChild("SET_PETS_TASKS")
 
@@ -67,7 +63,6 @@ local PET_IDS = {
 -- AUTO FARM FARMEABLE TYPES
 --========================
 local FarmableTypes = {}
-local selectedFarmableType = nil
 
 --========================
 -- THEME
@@ -364,6 +359,7 @@ main.Size = UDim2.new(0,430,0,310)
 main.Position = UDim2.new(0.5,-215,0.5,-155)
 main.BackgroundColor3 = THEME.BG
 main.BorderSizePixel = 0
+main.ZIndex = 5
 Instance.new("UICorner", main).CornerRadius = UDim.new(0,14)
 
 makeDraggable(main)
@@ -447,6 +443,7 @@ local content = Instance.new("Frame", main)
 content.Size = UDim2.new(1,-130,1,-10)
 content.Position = UDim2.new(0,125,0,5)
 content.BackgroundTransparency = 1
+content.ZIndex = 10
 
 local teleportFrame = Instance.new("Frame", content)
 teleportFrame.Size = UDim2.new(1,0,1,0)
@@ -466,6 +463,7 @@ local autoFarmFrame = Instance.new("Frame", content)
 autoFarmFrame.Size = UDim2.new(1,0,1,0)
 autoFarmFrame.BackgroundTransparency = 1
 autoFarmFrame.Visible = false
+autoFarmFrame.ZIndex = 20
 
 teleportTab.MouseButton1Click:Connect(function()
 	setActiveTab(teleportTab)
@@ -704,11 +702,13 @@ farmDropdown.TextSize = 14
 farmDropdown.TextColor3 = THEME.TEXT
 farmDropdown.BackgroundColor3 = Color3.fromRGB(45,45,45)
 farmDropdown.BorderSizePixel = 0
+farmDropdown.ZIndex = 21
 Instance.new("UICorner", farmDropdown).CornerRadius = UDim.new(0,8)
 
 local farmDropdownStroke = Instance.new("UIStroke", farmDropdown)
 farmDropdownStroke.Thickness = 1
 farmDropdownStroke.Color = Color3.fromRGB(65,65,65)
+farmDropdownStroke.ZIndex = 22
 
 --========================
 -- FARM DROPDOWN SCROLL
@@ -725,6 +725,7 @@ farmScroll.BackgroundColor3 = Color3.fromRGB(45,45,45)
 farmScroll.BorderSizePixel = 0
 farmScroll.Visible = false
 farmScroll.AutomaticCanvasSize = Enum.AutomaticSize.None
+farmScroll.ZIndex = 50
 Instance.new("UICorner", farmScroll).CornerRadius = UDim.new(0,8)
 
 local scrollLayout = Instance.new("UIListLayout", farmScroll)
@@ -739,6 +740,7 @@ for _,name in ipairs(FarmableTypes) do
 	opt.TextColor3 = Color3.new(1,1,1)
 	opt.BackgroundColor3 = Color3.fromRGB(60,60,60)
 	opt.BorderSizePixel = 0
+	opt.ZIndex = 51
 	Instance.new("UICorner", opt).CornerRadius = UDim.new(0,6)
 
 	opt.MouseButton1Click:Connect(function()
