@@ -372,6 +372,8 @@ autoToggle.TextColor3 = Color3.new(1,1,1)
 autoToggle.BackgroundColor3 = THEME.INACTIVE
 Instance.new("UICorner", autoToggle).CornerRadius = UDim.new(0,8)
 
+autoToggle.ClipsDescendants = false
+
 --========================
 -- AUTO OPEN INDICATOR DOT
 --========================
@@ -473,6 +475,8 @@ autoBuyToggle.TextColor3 = Color3.new(1,1,1)
 autoBuyToggle.BackgroundColor3 = THEME.INACTIVE
 autoBuyToggle.BorderSizePixel = 0
 Instance.new("UICorner", autoBuyToggle).CornerRadius = UDim.new(0,8)
+
+autoBuyToggle.ClipsDescendants = false
 
 --========================
 -- AUTO BUY INDICATOR DOT
