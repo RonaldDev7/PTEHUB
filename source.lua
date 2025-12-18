@@ -57,7 +57,7 @@ local THEME = {
 	INACTIVE = Color3.fromRGB(158, 27, 52), -- #9E1B34
 
 	TEXT = Color3.fromRGB(240, 240, 240),
-	SUBTEXT = Color3.fromRGB(200, 200, 200)
+	SUBTEXT = Color3.fromRGB(200, 200, 200),
 
 	-- SIDEBAR
 	SIDEBAR_IDLE = Color3.fromRGB(40,40,40),
