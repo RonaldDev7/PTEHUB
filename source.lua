@@ -443,13 +443,6 @@ local dotStroke = Instance.new("UIStroke", autoDot)
 dotStroke.Thickness = 1
 dotStroke.Color = Color3.fromRGB(40,40,40)
 
-
-addHover(
-	autoToggle,
-	Color3.fromRGB(90,40,40),
-	Color3.fromRGB(120,60,60)
-)
-
 local autoOpenStroke = Instance.new("UIStroke")
 autoOpenStroke.Parent = autoToggle
 autoOpenStroke.Thickness = 1
@@ -473,12 +466,6 @@ autoToggle.MouseButton1Click:Connect(function()
 		pulseDot(autoDot)
 	end
 end)
-
-applyHover(
-	autoToggle,
-	Color3.fromRGB(90,40,40),
-	Color3.fromRGB(120,55,55)
-)
 
 --========================
 -- OPEN AMOUNT LABEL
@@ -553,22 +540,10 @@ local autoBuyDotStroke = Instance.new("UIStroke", autoBuyDot)
 autoBuyDotStroke.Thickness = 1
 autoBuyDotStroke.Color = Color3.fromRGB(40,40,40)
 
-addHover(
-	autoBuyToggle,
-	Color3.fromRGB(90,40,40),
-	Color3.fromRGB(120,60,60)
-)
-
 local autoBuyStroke = Instance.new("UIStroke")
 autoBuyStroke.Parent = autoBuyToggle
 autoBuyStroke.Thickness = 1
 autoBuyStroke.Color = Color3.fromRGB(65,65,65)
-
-applyHover(
-	autoBuyToggle,
-	Color3.fromRGB(90,40,40),
-	Color3.fromRGB(120,55,55)
-)
 
 local autoBuyStatus = Instance.new("TextLabel", autoBuyFrame)
 autoBuyStatus.Size = UDim2.new(0,220,0,30)
