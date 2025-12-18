@@ -115,6 +115,23 @@ local function makeDraggable(obj)
 end
 
 --========================
+-- UI SHADOW
+--========================
+local function addShadow(parent, transparency)
+	local shadow = Instance.new("ImageLabel")
+	shadow.Name = "Shadow"
+	shadow.AnchorPoint = Vector2.new(0.5, 0.5)
+	shadow.Position = UDim2.new(0.5, 0, 0.5, 2)
+	shadow.Size = UDim2.new(1, 24, 1, 24)
+	shadow.BackgroundTransparency = 1
+	shadow.Image = "rbxassetid://1316045217"
+	shadow.ImageTransparency = transparency or 0.65
+	shadow.ScaleType = Enum.ScaleType.Slice
+	shadow.SliceCenter = Rect.new(10, 10, 118, 118)
+	shadow.Parent = parent
+end
+
+--========================
 -- UI HOVER EFFECT
 --========================
 local function applyHover(button, normalColor, hoverColor)
@@ -160,6 +177,11 @@ toggleBtn.BackgroundColor3 = Color3.fromRGB(25,25,25)
 toggleBtn.BorderSizePixel = 0
 Instance.new("UICorner", toggleBtn).CornerRadius = UDim.new(0,10)
 
+local toggleStroke = Instance.new("UIStroke")
+toggleStroke.Parent = toggleBtn
+toggleStroke.Thickness = 1
+toggleStroke.Color = Color3.fromRGB(65,65,65)
+
 makeDraggable(toggleBtn)
 
 --========================
@@ -173,6 +195,13 @@ main.BorderSizePixel = 0
 Instance.new("UICorner", main).CornerRadius = UDim.new(0,14)
 
 makeDraggable(main)
+addShadow(main, 0.6)
+
+-- Border suave main
+local mainStroke = Instance.new("UIStroke")
+mainStroke.Parent = main
+mainStroke.Thickness = 1
+mainStroke.Color = Color3.fromRGB(55,55,55)
 
 toggleBtn.MouseButton1Click:Connect(function()
 	main.Visible = not main.Visible
@@ -285,6 +314,11 @@ autoToggle.TextColor3 = Color3.new(1,1,1)
 autoToggle.BackgroundColor3 = Color3.fromRGB(90,40,40)
 Instance.new("UICorner", autoToggle).CornerRadius = UDim.new(0,8)
 
+local autoOpenStroke = Instance.new("UIStroke")
+autoOpenStroke.Parent = autoToggle
+autoOpenStroke.Thickness = 1
+autoOpenStroke.Color = Color3.fromRGB(65,65,65)
+
 autoToggle.MouseButton1Click:Connect(function()
 	AUTO_OPEN = not AUTO_OPEN
 	autoToggle.Text = "Auto Open: "..(AUTO_OPEN and "ON" or "OFF")
@@ -356,6 +390,12 @@ autoBuyToggle.TextColor3 = Color3.new(1,1,1)
 autoBuyToggle.BackgroundColor3 = Color3.fromRGB(90,40,40)
 autoBuyToggle.BorderSizePixel = 0
 Instance.new("UICorner", autoBuyToggle).CornerRadius = UDim.new(0,8)
+
+local autoBuyStroke = Instance.new("UIStroke")
+autoBuyStroke.Parent = autoBuyToggle
+autoBuyStroke.Thickness = 1
+autoBuyStroke.Color = Color3.fromRGB(65,65,65)
+
 applyHover(
 	autoBuyToggle,
 	Color3.fromRGB(90,40,40),
@@ -394,6 +434,11 @@ dropdown.TextSize = 14
 dropdown.TextColor3 = Color3.new(1,1,1)
 dropdown.BackgroundColor3 = Color3.fromRGB(45,45,45)
 Instance.new("UICorner", dropdown).CornerRadius = UDim.new(0,8)
+
+local dropdownStroke = Instance.new("UIStroke")
+dropdownStroke.Parent = dropdown
+dropdownStroke.Thickness = 1
+dropdownStroke.Color = Color3.fromRGB(65,65,65)
 
 --========================
 -- DROPDOWN OPTIONS
