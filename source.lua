@@ -89,8 +89,11 @@ local THEME = {
 local function applyTheme()
 	-- Sidebar buttons
 	for _,btn in pairs({teleportTab, autoTab, autoBuyTab, autoFarmTab}) do
-		btn.BackgroundColor3 = THEME.SIDEBAR_IDLE
+		if btn then
+			btn.BackgroundColor3 = THEME.SIDEBAR_IDLE
+		end
 	end
+
 
 	if currentTab then
 		currentTab.BackgroundColor3 = THEME.SIDEBAR_ACTIVE
