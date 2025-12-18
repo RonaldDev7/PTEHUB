@@ -18,6 +18,9 @@ local ClientHeartbeat = player:FindFirstChild("ClientHeartbeat")
 -- GUI PARENT SAFE
 --========================
 local parentGui = CoreGui
+pcall(function()
+	if gethui then parentGui = gethui() end
+end)
 
 pcall(function()
 	parentGui.PetTrainerHub:Destroy()
@@ -58,7 +61,7 @@ local PET_IDS = {
 -- AUTO FARM FARMEABLE TYPES
 --========================
 local FarmableTypes = {}
-local selectedFarmableTypes = {}
+local selectedFarmableType = nil
 
 --========================
 -- THEME
@@ -86,11 +89,8 @@ local THEME = {
 local function applyTheme()
 	-- Sidebar buttons
 	for _,btn in pairs({teleportTab, autoTab, autoBuyTab, autoFarmTab}) do
-		if btn then
-			btn.BackgroundColor3 = THEME.SIDEBAR_IDLE
-		end
+		btn.BackgroundColor3 = THEME.SIDEBAR_IDLE
 	end
-
 
 	if currentTab then
 		currentTab.BackgroundColor3 = THEME.SIDEBAR_ACTIVE
@@ -233,18 +233,6 @@ local function addShadow(parent, transparency)
 end
 
 --========================
--- UI TWEEN COLOR
---========================
-local function tweenColor(obj, targetColor, speed)
-	local tween = TweenService:Create(
-		obj,
-		TweenInfo.new(speed or 0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-		{BackgroundColor3 = targetColor}
-	)
-	tween:Play()
-end
-
---========================
 -- UI HOVER EFFECT
 --========================
 local function applyHover(button, normalColor, hoverColor)
@@ -255,6 +243,18 @@ local function applyHover(button, normalColor, hoverColor)
 	button.MouseLeave:Connect(function()
 		tweenColor(button, normalColor)
 	end)
+end
+
+--========================
+-- UI TWEEN COLOR
+--========================
+local function tweenColor(obj, targetColor, speed)
+	local tween = TweenService:Create(
+		obj,
+		TweenInfo.new(speed or 0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+		{BackgroundColor3 = targetColor}
+	)
+	tween:Play()
 end
 
 --========================
@@ -291,28 +291,8 @@ local function scanFarmableTypes()
 	end
 
 	table.sort(FarmableTypes)
+	selectedFarmableType = FarmableTypes[1]
 end
-
-local function toggleFarmableSelection(name)
-	if table.find(selectedFarmableTypes, name) then
-		table.remove(selectedFarmableTypes, table.find(selectedFarmableTypes, name))
-	else
-		table.insert(selectedFarmableTypes, name)
-	end
-end
-
-local function updateFarmDropdownText()
-	if not farmDropdown then return end
-
-	if #selectedFarmableTypes == 0 then
-		farmDropdown.Text = "Farmear: None"
-	elseif #selectedFarmableTypes == 1 then
-		farmDropdown.Text = "Farmear: "..selectedFarmableTypes[1]
-	else
-		farmDropdown.Text = "Farmear: "..#selectedFarmableTypes.." seleccionados"
-	end
-end
-
 
 --========================
 -- GUI ROOT
@@ -685,15 +665,13 @@ farmLabel.TextXAlignment = Enum.TextXAlignment.Left
 local farmDropdown = Instance.new("TextButton", autoFarmFrame)
 farmDropdown.Size = UDim2.new(0,220,0,34)
 farmDropdown.Position = UDim2.new(0,10,0,80)
-farmDropdown.Text = "Farmear: None"
+farmDropdown.Text = "Farmear: "..(selectedFarmableType or "None")
 farmDropdown.Font = Enum.Font.Gotham
 farmDropdown.TextSize = 14
 farmDropdown.TextColor3 = THEME.TEXT
 farmDropdown.BackgroundColor3 = Color3.fromRGB(45,45,45)
 farmDropdown.BorderSizePixel = 0
 Instance.new("UICorner", farmDropdown).CornerRadius = UDim.new(0,8)
-
-updateFarmDropdownText()
 
 local farmDropdownStroke = Instance.new("UIStroke", farmDropdown)
 farmDropdownStroke.Thickness = 1
@@ -708,12 +686,12 @@ local farmScroll = Instance.new("ScrollingFrame", autoFarmFrame)
 farmScroll.Size = UDim2.new(0,220,0,140)
 farmScroll.Position = UDim2.new(0,10,0,118)
 farmScroll.CanvasSize = UDim2.new(0,0,0,0)
-farmScroll.ScrollBarImageTransparency = 0.25
+farmScroll.ScrollBarImageTransparency = 0
 farmScroll.ScrollBarThickness = 5
 farmScroll.BackgroundColor3 = Color3.fromRGB(45,45,45)
 farmScroll.BorderSizePixel = 0
 farmScroll.Visible = false
-farmScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+farmScroll.AutomaticCanvasSize = Enum.AutomaticSize.None
 Instance.new("UICorner", farmScroll).CornerRadius = UDim.new(0,8)
 
 local scrollLayout = Instance.new("UIListLayout", farmScroll)
@@ -731,18 +709,12 @@ for _,name in ipairs(FarmableTypes) do
 	Instance.new("UICorner", opt).CornerRadius = UDim.new(0,6)
 
 	opt.MouseButton1Click:Connect(function()
-	toggleFarmableSelection(name)
-
-	-- feedback visual
-	if table.find(selectedFarmableTypes, name) then
-		tweenColor(opt, THEME.ACTIVE, 0.15)
-	else
-		tweenColor(opt, Color3.fromRGB(60,60,60), 0.15)
-	end
-
-	updateFarmDropdownText()
-end)
-
+		selectedFarmableType = name
+		farmDropdown.Text = "Farmear: "..name
+		farmDropdownOpen = false
+		farmScroll.Visible = false
+	end)
+end
 
 scrollLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
 	farmScroll.CanvasSize = UDim2.new(0,0,0,scrollLayout.AbsoluteContentSize.Y + 6)
@@ -751,18 +723,6 @@ end)
 farmDropdown.MouseButton1Click:Connect(function()
 	farmDropdownOpen = not farmDropdownOpen
 	farmScroll.Visible = farmDropdownOpen
-
-	if farmDropdownOpen then
-		for _,btn in ipairs(farmScroll:GetChildren()) do
-			if btn:IsA("TextButton") then
-				if table.find(selectedFarmableTypes, btn.Text) then
-					btn.BackgroundColor3 = THEME.ACTIVE
-				else
-					btn.BackgroundColor3 = Color3.fromRGB(60,60,60)
-				end
-			end
-		end
-	end
 end)
 
 autoFarmToggle.MouseButton1Click:Connect(function()
