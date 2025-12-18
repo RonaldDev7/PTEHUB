@@ -14,11 +14,6 @@ local PurchasePetball = Network:WaitForChild("PURCHASE_PETBALL")
 
 local ClientHeartbeat = player:FindFirstChild("ClientHeartbeat")
 
--- Verificaciones de remotos
-if not PurchasePetball then warn("PurchasePetball remoto no encontrado") end
-if not Network:FindFirstChild("SET_PETS_TASKS") then warn("SET_PETS_TASKS remoto no encontrado") end
-if not Network:FindFirstChild("PURCHASE_SHOP_STOCK") then warn("PURCHASE_SHOP_STOCK remoto no encontrado") end
-
 --========================
 -- GUI PARENT SAFE
 --========================
@@ -67,7 +62,6 @@ local PET_IDS = {
 --========================
 local FarmableTypes = {}
 local selectedFarmableType = nil
-local selectedFarmableTypes = {}
 
 --========================
 -- THEME
@@ -93,21 +87,16 @@ local THEME = {
 }
 
 local function applyTheme()
-	if not teleportTab then return end
-	if not autoTab then return end
-	if not autoBuyTab then return end
-	if not autoFarmTab then return end
-
+	-- Sidebar buttons
 	for _,btn in pairs({teleportTab, autoTab, autoBuyTab, autoFarmTab}) do
-		if btn then
-			btn.BackgroundColor3 = THEME.SIDEBAR_IDLE
-		end
+		btn.BackgroundColor3 = THEME.SIDEBAR_IDLE
 	end
 
 	if currentTab then
 		currentTab.BackgroundColor3 = THEME.SIDEBAR_ACTIVE
 	end
 
+	-- Toggles
 	if autoToggle then
 		autoToggle.BackgroundColor3 = AUTO_OPEN and THEME.ACTIVE or THEME.INACTIVE
 	end
@@ -120,6 +109,7 @@ local function applyTheme()
 		autoFarmToggle.BackgroundColor3 = AUTO_FARM and THEME.ACTIVE or THEME.INACTIVE
 	end
 
+	-- Dots
 	if autoDot then
 		autoDot.BackgroundColor3 = AUTO_OPEN and THEME.ACTIVE or THEME.INACTIVE
 	end
@@ -132,6 +122,7 @@ local function applyTheme()
 		autoFarmDot.BackgroundColor3 = AUTO_FARM and THEME.ACTIVE or THEME.INACTIVE
 	end
 end
+
 
 --========================
 -- TELEPORTS
@@ -270,12 +261,12 @@ end
 -- DOT PULSE EFFECT
 --========================
 local function pulseDot(dot)
-	spawn(function()
+	task.spawn(function()
 		while dot:GetAttribute("Active") do
 			tween(dot, {Size = UDim2.new(0,12,0,12)}, 0.25)
-			wait(0.25)
+			task.wait(0.25)
 			tween(dot, {Size = UDim2.new(0,10,0,10)}, 0.25)
-			wait(0.25)
+			task.wait(0.25)
 		end
 	end)
 end
@@ -283,13 +274,6 @@ end
 --========================
 -- SCAN FARMEABLE TYPES
 --========================
-local function tableFind(tbl, value)
-	for i, v in ipairs(tbl) do
-		if v == value then return i end
-	end
-	return nil
-end
-
 local function scanFarmableTypes()
 	table.clear(FarmableTypes)
 
@@ -297,7 +281,7 @@ local function scanFarmableTypes()
 		if model:IsA("Model") then
 			for _,obj in ipairs(model:GetDescendants()) do
 				if obj:IsA("MeshPart") then
-					if not tableFind(FarmableTypes, obj.Name) then
+					if not table.find(FarmableTypes, obj.Name) then
 						table.insert(FarmableTypes, obj.Name)
 					end
 					break
@@ -308,65 +292,6 @@ local function scanFarmableTypes()
 
 	table.sort(FarmableTypes)
 	selectedFarmableType = FarmableTypes[1]
-end
-
---========================
--- GET VALID FARMEABLES
---========================
-local function getValidFarmeables()
-	local list = {}
-
-	for _,model in ipairs(FarmeablesFolder:GetChildren()) do
-		if model:IsA("Model") then
-			for _,obj in ipairs(model:GetDescendants()) do
-				if obj:IsA("MeshPart") then
-					if selectedFarmableTypes[obj.Name] then
-						table.insert(list, model)
-					end
-					break
-				end
-			end
-		end
-	end
-
-	return list
-end
-
-local function getFarmableId(model)
-	return model.Name
-end
-
---========================
--- FARMABLE MULTI SELECT UTILS
---========================
-local function isFarmableSelected(name)
-	return selectedFarmableTypes[name] == true
-end
-
-local function toggleFarmable(name)
-	if selectedFarmableTypes[name] then
-		selectedFarmableTypes[name] = nil
-	else
-		selectedFarmableTypes[name] = true
-	end
-end
-
-local function getSelectedFarmableText()
-	local list = {}
-
-	for name,_ in pairs(selectedFarmableTypes) do
-		table.insert(list, name)
-	end
-
-	table.sort(list)
-
-	if #list == 0 then
-		return "None"
-	elseif #list <= 2 then
-		return table.concat(list, ", ")
-	else
-		return list[1]..", "..list[2].." (+"..(#list - 2)..")"
-	end
 end
 
 --========================
@@ -420,7 +345,7 @@ mainStroke.Color = Color3.fromRGB(55,55,55)
 toggleBtn.MouseButton1Click:Connect(function()
 	if main.Visible then
 		tween(main, {Size = UDim2.new(0,430,0,0)}, 0.18)
-		delay(0.18, function()
+		task.delay(0.18, function()
 			main.Visible = false
 		end)
 	else
@@ -772,10 +697,6 @@ Instance.new("UICorner", farmScroll).CornerRadius = UDim.new(0,8)
 local scrollLayout = Instance.new("UIListLayout", farmScroll)
 scrollLayout.Padding = UDim.new(0,6)
 
-print("DEBUG toggleFarmable:", toggleFarmable)
-print("DEBUG isFarmableSelected:", isFarmableSelected)
-print("DEBUG selectedFarmableTypes:", selectedFarmableTypes)
-
 for _,name in ipairs(FarmableTypes) do
 	local opt = Instance.new("TextButton", farmScroll)
 	opt.Size = UDim2.new(1,-8,0,26)
@@ -788,50 +709,12 @@ for _,name in ipairs(FarmableTypes) do
 	Instance.new("UICorner", opt).CornerRadius = UDim.new(0,6)
 
 	opt.MouseButton1Click:Connect(function()
-	toggleFarmable(name)
-
-	-- VISUAL CHECK
-	if isFarmableSelected(name) then
-		opt.BackgroundColor3 = THEME.ACCENT
-	else
-		opt.BackgroundColor3 = Color3.fromRGB(60,60,60)
-	end
-
-	-- TEXTO RESUMEN
-	local count = 0
-	for _ in pairs(selectedFarmableTypes) do
-		count += 1
-	end
-
-	if count == 0 then
-		farmDropdown.Text = "Farmear: None"
-	elseif count == 1 then
-		for k in pairs(selectedFarmableTypes) do
-			farmDropdown.Text = "Farmear: "..k
-			break
-		end
-	else
-		farmDropdown.Text = "Farmear: "..count.." seleccionados"
-	end
-end)
-
-	-- TEXTO RESUMEN
-	local count = 0
-	for _ in pairs(selectedFarmableTypes) do
-		count += 1
-	end
-
-	if count == 0 then
-		farmDropdown.Text = "Farmear: None"
-	elseif count == 1 then
-		for k in pairs(selectedFarmableTypes) do
-			farmDropdown.Text = "Farmear: "..k
-			break
-		end
-	else
-		farmDropdown.Text = "Farmear: "..count.." seleccionados"
-	end
-end)
+		selectedFarmableType = name
+		farmDropdown.Text = "Farmear: "..name
+		farmDropdownOpen = false
+		farmScroll.Visible = false
+	end)
+end
 
 scrollLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
 	farmScroll.CanvasSize = UDim2.new(0,0,0,scrollLayout.AbsoluteContentSize.Y + 6)
@@ -982,16 +865,16 @@ end)
 --========================
 -- AUTO OPEN LOOP (FIXED)
 --========================
-spawn(function()
+task.spawn(function()
 	while true do
 		if AUTO_OPEN then
 			pcall(function()
 				PurchasePetball:InvokeServer(selectedPetballId, 1, OPEN_AMOUNT)
 			end)
 
-			wait(BUY_DELAY) -- delay fijo
+			task.wait(BUY_DELAY) -- delay fijo
 		else
-			wait(0.4)
+			task.wait(0.4)
 		end
 	end
 end)
@@ -1007,7 +890,7 @@ local function buyAllTickets()
 			pcall(function()
 				BuyRemote:InvokeServer(item.resource, 1)
 			end)
-			wait(0.25)
+			task.wait(0.25)
 		end
 	end
 end
@@ -1026,10 +909,10 @@ autoBuyToggle.MouseButton1Click:Connect(function()
 	)
 
 	if AUTO_BUY then
-		spawn(function()
+		task.spawn(function()
 			while AUTO_BUY do
 				buyAllTickets()
-				wait(5)
+				task.wait(5)
 			end
 		end)
 	end
@@ -1056,46 +939,4 @@ autoBuyToggle.MouseLeave:Connect(function()
 		AUTO_BUY and THEME.ACTIVE or THEME.INACTIVE,
 		0.12
 	)
-end)
-
---========================
--- AUTO FARM LOOP (PASO 3)
---========================
-spawn(function()
-	while true do
-		if AUTO_FARM then
-			local targets = getValidFarmeables()
-
-			if #targets == 0 then
-				wait(1)
-				continue
-			end
-
-			for _,model in ipairs(targets) do
-				if not AUTO_FARM then break end
-				if not model or not model.Parent then continue end
-
-				-- Construir payload
-				local payload = {}
-				for _,petId in ipairs(PET_IDS) do
-					payload[petId] = {
-						task = "farm",
-						target_id = model.Name
-					}
-				end
-
-				-- Enviar pets UNA VEZ (envuelto en pcall para evitar errores)
-				pcall(function()
-					SetPetsTasks:FireServer(payload)
-				end)
-
-				-- Esperar a que el farmeable muera
-				repeat
-					wait(0.4)
-				until not model.Parent or not AUTO_FARM
-			end
-		else
-			wait(0.5)
-		end
-	end
 end)
