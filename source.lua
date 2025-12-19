@@ -19,7 +19,6 @@ local FarmeablesFolder = Workspace:WaitForChild("Farmeables")
 
 local AUTO_FARM = false
 
-print("9")
 --========================
 -- GUI PARENT SAFE
 --========================
@@ -160,15 +159,6 @@ local function isInsideArea(pos)
 	    and pos.Z <= math.max(AREA_MIN.Z, AREA_MAX.Z)
 end
 
-local function farmableHasType(model, typeName)
-	for _,obj in ipairs(model:GetDescendants()) do
-		if obj:IsA("MeshPart") and obj.Name == typeName then
-			return true
-		end
-	end
-	return false
-end
-
 local function buildFarmPayload(targetId)
 	local payload = {}
 	for _, petId in ipairs(PET_IDS) do
@@ -186,6 +176,15 @@ end
 
 local function farmableExists(targetId)
 	return FarmeablesFolder:FindFirstChild(tostring(targetId)) ~= nil
+end
+
+local function farmableHasType(model, typeName)
+	for _,obj in ipairs(model:GetDescendants()) do
+		if obj:IsA("MeshPart") and obj.Name == typeName then
+			return true
+		end
+	end
+	return false
 end
 
 local function getClosestFarmable()
