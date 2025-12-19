@@ -19,6 +19,7 @@ local FarmeablesFolder = Workspace:WaitForChild("Farmeables")
 
 local AUTO_FARM = false
 
+print("1")
 --========================
 -- GUI PARENT SAFE
 --========================
