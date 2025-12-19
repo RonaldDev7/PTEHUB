@@ -19,6 +19,7 @@ local FarmeablesFolder = Workspace:WaitForChild("Farmeables")
 
 local AUTO_FARM = false
 
+print("Pepe")
 --========================
 -- GUI PARENT SAFE
 --========================
@@ -1080,25 +1081,12 @@ autoBuyToggle.MouseLeave:Connect(function()
 	)
 end)
 
-local function clearPetsTasks()
-	local payload = {}
-	for _, petId in ipairs(PET_IDS) do
-		payload[petId] = {
-			task = "idle"
-		}
-	end
-	SetPetsTasks:FireServer(payload)
-end
-
 --========================
 -- AUTO FARM LOOP (FINAL)
 --========================
 task.spawn(function()
-	local lastTarget = nil
-
 	while true do
 		if not AUTO_FARM then
-			lastTarget = nil
 			task.wait(0.4)
 			continue
 		end
@@ -1111,23 +1099,13 @@ task.spawn(function()
 
 		local targetId = farmable.Name
 
-		-- Si el target cambió, reasignar pets
-		if targetId ~= lastTarget then
-			clearPetsTasks()
-			task.wait(0.1)
-			sendPetsToFarm(targetId)
-			lastTarget = targetId
-		end
-
-		-- Esperar a que muera
+		-- 🔁 Reenviar task constantemente
 		while AUTO_FARM and farmableExists(targetId) do
-			task.wait(0.3)
+			sendPetsToFarm(targetId)
+			task.wait(0.6) -- ESTE DELAY ES CLAVE
 		end
-
-		-- Reset para forzar nuevo target
-		clearPetsTasks()
-		lastTarget = nil
 
 		task.wait(0.2)
 	end
 end)
+
