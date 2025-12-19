@@ -19,7 +19,6 @@ local FarmeablesFolder = Workspace:WaitForChild("Farmeables")
 
 local AUTO_FARM = false
 
-print("1")
 --========================
 -- GUI PARENT SAFE
 --========================
@@ -399,17 +398,6 @@ end
 local gui = Instance.new("ScreenGui", parentGui)
 gui.Name = "PetTrainerHub"
 gui.ResetOnSpawn = false
-
-task.spawn(function()
-	repeat task.wait(0.3) until #FarmeablesFolder:GetChildren() > 0
-
-	scanFarmableTypes()
-	rebuildFarmDropdown()
-
-	if selectedFarmableType then
-		farmDropdown.Text = "Farmear: "..selectedFarmableType
-	end
-end)
 
 --========================
 -- TOGGLE BUTTON (≡)
@@ -819,6 +807,24 @@ farmScroll.ZIndex = 50
 Instance.new("UICorner", farmScroll).CornerRadius = UDim.new(0,8)
 
 local scrollLayout = Instance.new("UIListLayout", farmScroll)
+
+task.spawn(function()
+	repeat task.wait(0.3) until #FarmeablesFolder:GetChildren() > 0
+
+	scanFarmableTypes()
+	rebuildFarmDropdown()
+
+	if selectedFarmableType then
+		farmDropdown.Text = "Farmear: "..selectedFarmableType
+	end
+end)
+
+FarmeablesFolder.ChildAdded:Connect(function()
+	task.wait(0.2)
+	scanFarmableTypes()
+	rebuildFarmDropdown()
+end)
+
 scrollLayout.Padding = UDim.new(0,6)
 
 scrollLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
