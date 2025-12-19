@@ -19,6 +19,7 @@ local FarmeablesFolder = Workspace:WaitForChild("Farmeables")
 
 local AUTO_FARM = false
 
+print("2")
 --========================
 -- GUI PARENT SAFE
 --========================
@@ -67,6 +68,9 @@ local AREA_MAX = Vector3.new(557.32, 0, -857.58)
 -- AUTO FARM FARMEABLE TYPES
 --========================
 local FarmableTypes = {}
+-- Forward declarations (IMPORTANTE)
+local farmScroll
+local farmDropdown
 
 --========================
 -- THEME
@@ -364,6 +368,7 @@ local function scanFarmableTypes()
 end
 
 local function rebuildFarmDropdown()
+	if not farmScroll then return end
 	-- Limpiar opciones anteriores
 	for _,child in ipairs(farmScroll:GetChildren()) do
 		if child:IsA("TextButton") then
@@ -771,7 +776,7 @@ farmLabel.TextColor3 = THEME.SUBTEXT
 farmLabel.BackgroundTransparency = 1
 farmLabel.TextXAlignment = Enum.TextXAlignment.Left
 
-local farmDropdown = Instance.new("TextButton", autoFarmFrame)
+farmDropdown = Instance.new("TextButton", autoFarmFrame)
 farmDropdown.Size = UDim2.new(0,220,0,34)
 farmDropdown.Position = UDim2.new(0,10,0,80)
 farmDropdown.Text = "Farmear: "..(selectedFarmableType or "Seleccionar")
@@ -793,7 +798,7 @@ farmDropdownStroke.ZIndex = 14
 --========================
 local farmDropdownOpen = false
 
-local farmScroll = Instance.new("ScrollingFrame", autoFarmFrame)
+farmScroll = Instance.new("ScrollingFrame", autoFarmFrame)
 farmScroll.Size = UDim2.new(0,220,0,140)
 farmScroll.Position = UDim2.new(0,10,0,118)
 farmScroll.CanvasSize = UDim2.new(0,0,0,0)
