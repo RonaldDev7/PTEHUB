@@ -19,7 +19,7 @@ local FarmeablesFolder = Workspace:WaitForChild("Farmeables")
 
 local AUTO_FARM = false
 
-print("2")
+print("9")
 --========================
 -- GUI PARENT SAFE
 --========================
@@ -369,15 +369,18 @@ end
 
 local function rebuildFarmDropdown()
 	if not farmScroll then return end
-	-- Limpiar opciones anteriores
-	for _,child in ipairs(farmScroll:GetChildren()) do
+	if not farmScroll.Parent then return end
+	if not farmScroll:IsDescendantOf(game) then return end
+
+	for _, child in ipairs(farmScroll:GetChildren()) do
 		if child:IsA("TextButton") then
 			child:Destroy()
 		end
 	end
 
-	for _,name in ipairs(FarmableTypes) do
-		local opt = Instance.new("TextButton", farmScroll)
+	for _, name in ipairs(FarmableTypes) do
+		local opt = Instance.new("TextButton")
+		opt.Parent = farmScroll
 		opt.Size = UDim2.new(1,-8,0,26)
 		opt.Text = name
 		opt.Font = Enum.Font.Gotham
@@ -390,9 +393,13 @@ local function rebuildFarmDropdown()
 
 		opt.MouseButton1Click:Connect(function()
 			selectedFarmableType = name
-			farmDropdown.Text = "Farmear: "..name
+			if farmDropdown then
+				farmDropdown.Text = "Farmear: "..name
+			end
 			farmDropdownOpen = false
-			farmScroll.Visible = false
+			if farmScroll then
+				farmScroll.Visible = false
+			end
 		end)
 	end
 end
@@ -825,6 +832,7 @@ task.spawn(function()
 end)
 
 FarmeablesFolder.ChildAdded:Connect(function()
+	if not autoFarmFrame.Visible then return end
 	task.wait(0.2)
 	scanFarmableTypes()
 	rebuildFarmDropdown()
