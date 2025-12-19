@@ -19,7 +19,7 @@ local FarmeablesFolder = Workspace:WaitForChild("Farmeables")
 
 local AUTO_FARM = false
 
-print("papa")
+print("Pepe")
 --========================
 -- GUI PARENT SAFE
 --========================
@@ -205,10 +205,9 @@ local function getClosestFarmable()
 			local dist = (pp.Position - hrp.Position).Magnitude
 
 
-			if lockedFarmType and not farmableHasType(model, lockedFarmType) then
+			if selectedFarmableType and not farmableHasType(model, selectedFarmableType) then
 				continue
 			end
-
 
 			if dist < shortest then
 				shortest = dist
@@ -852,23 +851,7 @@ end)
 
 autoFarmToggle.MouseButton1Click:Connect(function()
 	AUTO_FARM = not AUTO_FARM
-
-	if AUTO_FARM then
-		lockedFarmType = selectedFarmableType -- 🔒 congelamos tipo
-	else
-		lockedFarmType = nil
-	end
-
 	autoFarmToggle.Text = "Auto Farm: "..(AUTO_FARM and "ON" or "OFF")
-	tweenColor(autoFarmToggle, AUTO_FARM and THEME.ACTIVE or THEME.INACTIVE, 0.2)
-	autoFarmDot.BackgroundColor3 = AUTO_FARM and THEME.ACTIVE or THEME.INACTIVE
-	autoFarmDot:SetAttribute("Active", AUTO_FARM)
-
-	if AUTO_FARM then
-		pulseDot(autoFarmDot)
-	end
-end)
-
 
 	tweenColor(
 		autoFarmToggle,
@@ -1115,18 +1098,13 @@ task.spawn(function()
 		end
 
 		local targetId = farmable.Name
-		local lastAlive = os.clock()
 
+		-- 🔁 Reenviar task constantemente
 		while AUTO_FARM and farmableExists(targetId) do
 			sendPetsToFarm(targetId)
-			task.wait(0.6)
-
-			-- ⏱ watchdog anti-freeze
-			if os.clock() - lastAlive > 6 then
-				break
-			end
+			task.wait(0.6) -- ESTE DELAY ES CLAVE
 		end
 
-		task.wait(0.3)
+		task.wait(0.2)
 	end
 end)
