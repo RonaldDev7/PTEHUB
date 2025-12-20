@@ -19,7 +19,7 @@ local FarmeablesFolder = Workspace:WaitForChild("Farmeables")
 
 local AUTO_FARM = false
 
-print("Pep")
+print("Pepe1")
 --========================
 -- GUI PARENT SAFE
 --========================
@@ -46,7 +46,7 @@ local PETBALLS = {
 	["Greenleaf Town"]    = 2,
 	["Haunted Graveyard"] = 3,
 	["Capital City"]      = 4,
-	["Christmas Event"]   = 5
+	["Christmas Event"]      = 5
 }
 
 local selectedPetballName = "Outer Village"
@@ -143,12 +143,6 @@ local Teleports = {
 	Tienda = CFrame.new(79.4,83.0,122.2),
 	Pueblo = CFrame.new(672.4,82.7,-322.3),
 	Cementerio = CFrame.new(737.9,82.8,-745.2)
-	Isla Navidad = Cframe.new(-0.0114303585,
-	-0.181475833,
-	-1.40234327,
-	1,0,0,
-	0,1,0,
-	0,0,1)
 }
 
 local function getHRP()
