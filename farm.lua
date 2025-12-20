@@ -12,9 +12,11 @@ local FARM_DELAY = 12
 
 local TARGET_TYPE = "arbusto" -- coins / chest / arbusto
 
+print("farm activo")
+
 -- AREA DE FARMEO (EDITA ESTOS VALORES)
-local AREA_MIN = Vector3.new(823.2489, 0, 4504.2797)
-local AREA_MAX = Vector3.new(29.9689, 0, 5258.977)
+local AREA_MIN = Vector3.new(1055.5316, 0, 4464.6293)
+local AREA_MAX = Vector3.new(-48, 0, 5332.3471)
 
 -- LISTA DE PETS Y VARIABLES
 
@@ -215,12 +217,15 @@ end
 local function watchFarmable(petId, targetId)
     task.spawn(function()
         while AUTO_FARM and farmableExists(targetId) do
-            task.wait(0.4)
+            task.wait()
         end
 
-        -- Liberar
+        -- liberar target
         BusyTargets[targetId] = nil
         PetAssignments[petId] = nil
+
+        -- ASIGNAR NUEVO TARGET INMEDIATO
+        task.wait() -- 1 frame
     end)
 end
 
@@ -228,7 +233,7 @@ end
 task.spawn(function()
     while true do
         if not AUTO_FARM then
-            task.wait(0.5)
+            task.wait()
             continue
         end
 
@@ -245,6 +250,6 @@ task.spawn(function()
         end
 
 
-        task.wait(0.5)
+        task.wait()
     end
 end)
