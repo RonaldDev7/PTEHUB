@@ -142,8 +142,7 @@ local Teleports = {
 	Autumn = CFrame.new(719.4,82.4,12.8),
 	Tienda = CFrame.new(79.4,83.0,122.2),
 	Pueblo = CFrame.new(672.4,82.7,-322.3),
-	Cementerio = CFrame.new(737.9,82.8,-745.2),
-	Isla Navidad = Cframe.new(-0.0114303585,-0.181475833,-1.40234327)
+	Cementerio = CFrame.new(737.9,82.8,-745.2)
 }
 
 local function getHRP()
