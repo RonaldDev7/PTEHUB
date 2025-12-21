@@ -12,6 +12,7 @@ local FARM_DELAY = 12
 
 local TARGET_TYPE = "arbusto" -- coins / chest / arbusto
 
+print("pepe19")
 -- AREA DE FARMEO (EDITA ESTOS VALORES)
 local AREA_MIN = Vector3.new(1055.5316, 0, 4464.6293)
 local AREA_MAX = Vector3.new(-48, 0, 5332.3471)
