@@ -12,8 +12,6 @@ local FARM_DELAY = 12
 
 local TARGET_TYPE = "arbusto" -- coins / chest / arbusto
 
-print("farm activo2.1")
-
 -- AREA DE FARMEO (EDITA ESTOS VALORES)
 local AREA_MIN = Vector3.new(1055.5316, 0, 4464.6293)
 local AREA_MAX = Vector3.new(-48, 0, 5332.3471)
@@ -21,10 +19,10 @@ local AREA_MAX = Vector3.new(-48, 0, 5332.3471)
 -- LISTA DE PETS Y VARIABLES
 
 local PET_IDS = {
-    "344815",
     "7183",
     "7606",
     "7605",
+    "7090",
     "6980",
     "7607"
 }
@@ -75,18 +73,6 @@ local function getHRP()
     return char:WaitForChild("HumanoidRootPart")
 end
 
-local function getPetPositionByIndex(index)
-    local petModel = MyPetsFolder:GetChildren()[index]
-    if not petModel then return nil end
-
-    local centerAttachment = petModel:FindFirstChild("Center", true)
-    if centerAttachment and centerAttachment:IsA("Attachment") then
-        return centerAttachment.WorldPosition
-    end
-
-    return nil
-end
-
 local function farmableHasType(model, typeName)
     for _, obj in ipairs(model:GetDescendants()) do
         if obj:IsA("MeshPart") and obj.Name == typeName then
@@ -103,32 +89,19 @@ local function isInsideArea(pos)
         and pos.Z <= math.max(AREA_MIN.Z, AREA_MAX.Z)
 end
 
-local function getClosestFreeFarmableForPet(petId)
-    local petPos = getPetPositionByIndex(table.find(PET_IDS, petId))
-    if not petPos then return nil end
-
+local function getClosestFreeFarmableForPet()
+    local hrp = getHRP()
     local closest
     local shortest = math.huge
 
     for _, model in ipairs(FarmeablesFolder:GetChildren()) do
         if model:IsA("Model") and model.PrimaryPart then
 
-            -- tipo correcto
-            if not farmableHasType(model, TARGET_TYPE) then
-                continue
-            end
+            if not farmableHasType(model, TARGET_TYPE) then continue end
+            if not isInsideArea(model.PrimaryPart.Position) then continue end
+            if BusyTargets[model.Name] then continue end
 
-            -- dentro del área
-            if not isInsideArea(model.PrimaryPart.Position) then
-                continue
-            end
-
-            -- libre
-            if BusyTargets[model.Name] then
-                continue
-            end
-
-            local dist = (model.PrimaryPart.Position - petPos).Magnitude
+            local dist = (model.PrimaryPart.Position - hrp.Position).Magnitude
             if dist < shortest then
                 shortest = dist
                 closest = model
@@ -138,7 +111,6 @@ local function getClosestFreeFarmableForPet(petId)
 
     return closest
 end
-
 
 local function farmableExists(targetId)
     return FarmeablesFolder:FindFirstChild(tostring(targetId)) ~= nil
@@ -241,7 +213,7 @@ task.spawn(function()
 
         for _, petId in ipairs(PET_IDS) do
             if not PetAssignments[petId] then
-                local target = getClosestFreeFarmableForPet(petId)
+                local target = getClosestFreeFarmableForPet()
                 if target then
                     assignPetToFarmable(petId, target)
                     watchFarmable(petId, target.Name)
