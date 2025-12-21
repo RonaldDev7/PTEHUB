@@ -19,10 +19,10 @@ local AREA_MAX = Vector3.new(-48, 0, 5332.3471)
 -- LISTA DE PETS Y VARIABLES
 
 local PET_IDS = {
+    "344815",
     "7183",
     "7606",
     "7605",
-    "7090",
     "6980",
     "7607"
 }
