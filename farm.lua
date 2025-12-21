@@ -12,7 +12,7 @@ local FARM_DELAY = 12
 
 local TARGET_TYPE = "arbusto" -- coins / chest / arbusto
 
-print("farm activo")
+print("farm activo2")
 
 -- AREA DE FARMEO (EDITA ESTOS VALORES)
 local AREA_MIN = Vector3.new(1055.5316, 0, 4464.6293)
@@ -26,7 +26,8 @@ local PET_IDS = {
     "7605",
     "7090",
     "6980",
-    "7607"
+    "7607",
+    "344815"
 }
 
 -- TRACKING
