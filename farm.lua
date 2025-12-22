@@ -16,7 +16,7 @@ local TARGET_PRIORITY = {
     "arbusto"
 }
 
-print("pepe9")
+print("pepe")
 -- AREA DE FARMEO (EDITA ESTOS VALORES)
 local AREA_MIN = Vector3.new(1055.5316, 0, 4464.6293)
 local AREA_MAX = Vector3.new(-48, 0, 5332.3471)
@@ -27,8 +27,8 @@ local PET_IDS = {
     "345965",
     "345966",
     "7606",
-    "345968",
-    "345969",
+    "7605",
+    "6980",
     "345967"
 }
 
@@ -87,6 +87,47 @@ local function getFarmableType(model)
                 end
             end
         end
+    end
+    return nil
+end
+
+local function getBestFarmableForPet(petId)
+    local petPos = getPetPosition(petId)
+    if not petPos then return nil end
+
+    -- recorrer por PRIORIDAD DE TIPO
+    for _, priorityType in ipairs(TARGET_PRIORITY) do
+        local closest
+        local shortest = math.huge
+
+        for _, model in ipairs(FarmeablesFolder:GetChildren()) do
+            if not model:IsA("Model") or not model.PrimaryPart then continue end
+            if BusyTargets[model.Name] then continue end
+            if not isInsideArea(model.PrimaryPart.Position) then continue end
+
+            local farmType = getFarmableType(model)
+            if farmType ~= priorityType then continue end
+
+            local dist = (model.PrimaryPart.Position - petPos).Magnitude
+            if dist < shortest then
+                shortest = dist
+                closest = model
+            end
+        end
+
+        -- si encontró uno de este tipo, YA NO BUSCA MÁS
+        if closest then
+            return closest
+        end
+    end
+
+    return nil
+end
+
+local function getPetPosition(petId)
+    local petModel = MyPetsFolder:FindFirstChild(tostring(petId))
+    if petModel and petModel.PrimaryPart then
+        return petModel.PrimaryPart.Position
     end
     return nil
 end
@@ -222,7 +263,7 @@ task.spawn(function()
 
         for _, petId in ipairs(PET_IDS) do
             if not PetAssignments[petId] then
-                local target = getClosestFreeFarmableForPet()
+                local target = getBestFarmableForPet(petId)
                 if target then
                     assignPetToFarmable(petId, target)
                     watchFarmable(petId, target.Name)
