@@ -11,9 +11,9 @@ local AUTO_FARM = true
 local FARM_DELAY = 12
 
 local TARGET_TYPES = {
-    arbusto = true,
-    Meshes/roca = true,
-    Meshes/Crystal01 = true
+    ["arbusto"] = true,
+    ["roca"] = true,
+    ["Crystal01"] = true
 }
 
 print("pepe9")
@@ -25,7 +25,7 @@ local AREA_MAX = Vector3.new(-48, 0, 5332.3471)
 
 local PET_IDS = {
     "345965",
-    "7183",
+    "345966",
     "7606",
     "7605",
     "6980",
