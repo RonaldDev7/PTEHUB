@@ -10,7 +10,11 @@ local SetPetsTasks = Network:WaitForChild("SET_PETS_TASKS")
 local AUTO_FARM = true
 local FARM_DELAY = 12
 
-local TARGET_TYPE = "arbusto" -- coins / chest / arbusto
+local TARGET_TYPES = {
+    arbusto = true,
+    Meshes/roca = true,
+    Meshes/Crystal01 = true
+}
 
 print("pepe9")
 -- AREA DE FARMEO (EDITA ESTOS VALORES)
@@ -74,9 +78,9 @@ local function getHRP()
     return char:WaitForChild("HumanoidRootPart")
 end
 
-local function farmableHasType(model, typeName)
+local function farmableHasAllowedType(model)
     for _, obj in ipairs(model:GetDescendants()) do
-        if obj:IsA("MeshPart") and obj.Name == typeName then
+        if obj:IsA("MeshPart") and TARGET_TYPES[obj.Name] then
             return true
         end
     end
@@ -98,7 +102,7 @@ local function getClosestFreeFarmableForPet()
     for _, model in ipairs(FarmeablesFolder:GetChildren()) do
         if model:IsA("Model") and model.PrimaryPart then
 
-            if not farmableHasType(model, TARGET_TYPE) then continue end
+            if not farmableHasAllowedType(model) then continue end
             if not isInsideArea(model.PrimaryPart.Position) then continue end
             if BusyTargets[model.Name] then continue end
 
@@ -122,7 +126,7 @@ local function getFreeFarmables()
 
     for _, model in ipairs(FarmeablesFolder:GetChildren()) do
         if model:IsA("Model") and model.PrimaryPart then
-            if not farmableHasType(model, TARGET_TYPE) then
+            if not farmableHasAllowedType(model) then
                 continue
             end
 
@@ -148,7 +152,7 @@ local function getClosestFreeFarmable()
         if model:IsA("Model") and model.PrimaryPart then
 
             -- tipo correcto
-            if not farmableHasType(model, TARGET_TYPE) then
+            if not farmableHasAllowedType(model) then
                 continue
             end
 
