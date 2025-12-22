@@ -10,13 +10,13 @@ local SetPetsTasks = Network:WaitForChild("SET_PETS_TASKS")
 local AUTO_FARM = true
 local FARM_DELAY = 12
 
-local TARGET_TYPES = {
-    ["arbusto"] = true,
-    ["roca"] = true,
-    ["Crystal01"] = true
+local TARGET_PRIORITY = {
+    "Crystal01",
+    "roca",
+    "arbusto"
 }
 
-print("pepe9")
+print("pepe1")
 -- AREA DE FARMEO (EDITA ESTOS VALORES)
 local AREA_MIN = Vector3.new(1055.5316, 0, 4464.6293)
 local AREA_MAX = Vector3.new(-48, 0, 5332.3471)
@@ -78,13 +78,17 @@ local function getHRP()
     return char:WaitForChild("HumanoidRootPart")
 end
 
-local function farmableHasAllowedType(model)
+local function getFarmableType(model)
     for _, obj in ipairs(model:GetDescendants()) do
-        if obj:IsA("MeshPart") and TARGET_TYPES[obj.Name] then
-            return true
+        if obj:IsA("MeshPart") then
+            for _, typeName in ipairs(TARGET_PRIORITY) do
+                if obj.Name == typeName then
+                    return typeName
+                end
+            end
         end
     end
-    return false
+    return nil
 end
 
 local function isInsideArea(pos)
