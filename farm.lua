@@ -16,7 +16,7 @@ local TARGET_PRIORITY = {
     "arbusto"
 }
 
-print("pepe1")
+print("pepe9")
 -- AREA DE FARMEO (EDITA ESTOS VALORES)
 local AREA_MIN = Vector3.new(1055.5316, 0, 4464.6293)
 local AREA_MAX = Vector3.new(-48, 0, 5332.3471)
@@ -106,7 +106,7 @@ local function getClosestFreeFarmableForPet()
     for _, model in ipairs(FarmeablesFolder:GetChildren()) do
         if model:IsA("Model") and model.PrimaryPart then
 
-            if not farmableHasAllowedType(model) then continue end
+            if not getFarmableType(model) then continue end
             if not isInsideArea(model.PrimaryPart.Position) then continue end
             if BusyTargets[model.Name] then continue end
 
@@ -130,7 +130,7 @@ local function getFreeFarmables()
 
     for _, model in ipairs(FarmeablesFolder:GetChildren()) do
         if model:IsA("Model") and model.PrimaryPart then
-            if not farmableHasAllowedType(model) then
+            if not getFarmableType(model) then
                 continue
             end
 
@@ -156,7 +156,7 @@ local function getClosestFreeFarmable()
         if model:IsA("Model") and model.PrimaryPart then
 
             -- tipo correcto
-            if not farmableHasAllowedType(model) then
+            if not getFarmableType(model) then
                 continue
             end
 
@@ -234,3 +234,4 @@ task.spawn(function()
         task.wait()
     end
 end)
+
