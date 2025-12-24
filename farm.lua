@@ -98,48 +98,6 @@ local function isInsideArea(pos)
         and pos.Z <= math.max(AREA_MIN.Z, AREA_MAX.Z)
 end
 
-local function getPetPosition(petId)
-    for _, pet in ipairs(MyPetsFolder:GetChildren()) do
-        if pet.PrimaryPart then
-            return pet.PrimaryPart.Position
-        end
-    end
-    return nil
-end
-
-local function getBestFarmableForPet(petId)
-    local petPos = getPetPosition(petId)
-    if not petPos then return nil end
-
-    -- recorrer por PRIORIDAD DE TIPO
-    for _, priorityType in ipairs(TARGET_PRIORITY) do
-        local closest
-        local shortest = math.huge
-
-        for _, model in ipairs(FarmeablesFolder:GetChildren()) do
-            if not model:IsA("Model") or not model.PrimaryPart then continue end
-            if BusyTargets[model.Name] then continue end
-            if not isInsideArea(model.PrimaryPart.Position) then continue end
-
-            local farmType = getFarmableType(model)
-            if farmType ~= priorityType then continue end
-
-            local dist = (model.PrimaryPart.Position - petPos).Magnitude
-            if dist < shortest then
-                shortest = dist
-                closest = model
-            end
-        end
-
-        -- si encontró uno de este tipo, YA NO BUSCA MÁS
-        if closest then
-            return closest
-        end
-    end
-
-    return nil
-end
-
 local function getClosestFreeFarmableForPet()
     local hrp = getHRP()
     local closest
@@ -262,10 +220,9 @@ task.spawn(function()
 
         local freeFarmables = getFreeFarmables()
 
-        for _, pet in ipairs(MyPetsFolder:GetChildren()) do
-            local petId = pet.Name
+        for _, petId in ipairs(PET_IDS) do
             if not PetAssignments[petId] then
-                local target = getBestFarmableForPet(petId)
+                local target = getClosestFreeFarmableForPet()
                 if target then
                     assignPetToFarmable(petId, target)
                     watchFarmable(petId, target.Name)
@@ -277,4 +234,3 @@ task.spawn(function()
         task.wait()
     end
 end)
-
