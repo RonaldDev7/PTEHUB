@@ -16,7 +16,7 @@ local TARGET_PRIORITY = {
     "arbusto"
 }
 
-print("pepe9")
+print("pepe")
 -- AREA DE FARMEO (EDITA ESTOS VALORES)
 local AREA_MIN = Vector3.new(1055.5316, 0, 4464.6293)
 local AREA_MAX = Vector3.new(-48, 0, 5332.3471)
@@ -26,7 +26,7 @@ local AREA_MAX = Vector3.new(-48, 0, 5332.3471)
 local PET_IDS = {
     "345965",
     "345966",
-    "7606",
+    "346042",
     "345969",
     "345968",
     "345967"
