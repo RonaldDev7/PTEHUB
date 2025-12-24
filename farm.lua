@@ -16,7 +16,7 @@ local TARGET_PRIORITY = {
     "arbusto"
 }
 
-print("pepe")
+print("pepe9")
 -- AREA DE FARMEO (EDITA ESTOS VALORES)
 local AREA_MIN = Vector3.new(1055.5316, 0, 4464.6293)
 local AREA_MAX = Vector3.new(-48, 0, 5332.3471)
@@ -91,6 +91,13 @@ local function getFarmableType(model)
     return nil
 end
 
+local function isInsideArea(pos)
+    return pos.X >= math.min(AREA_MIN.X, AREA_MAX.X)
+        and pos.X <= math.max(AREA_MIN.X, AREA_MAX.X)
+        and pos.Z >= math.min(AREA_MIN.Z, AREA_MAX.Z)
+        and pos.Z <= math.max(AREA_MIN.Z, AREA_MAX.Z)
+end
+
 local function getBestFarmableForPet(petId)
     local petPos = getPetPosition(petId)
     if not petPos then return nil end
@@ -130,13 +137,6 @@ local function getPetPosition(petId)
         return petModel.PrimaryPart.Position
     end
     return nil
-end
-
-local function isInsideArea(pos)
-    return pos.X >= math.min(AREA_MIN.X, AREA_MAX.X)
-        and pos.X <= math.max(AREA_MIN.X, AREA_MAX.X)
-        and pos.Z >= math.min(AREA_MIN.Z, AREA_MAX.Z)
-        and pos.Z <= math.max(AREA_MIN.Z, AREA_MAX.Z)
 end
 
 local function getClosestFreeFarmableForPet()
