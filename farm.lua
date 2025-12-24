@@ -16,7 +16,7 @@ local TARGET_PRIORITY = {
     "arbusto"
 }
 
-print("papo")
+print("pepe9")
 -- AREA DE FARMEO (EDITA ESTOS VALORES)
 local AREA_MIN = Vector3.new(1055.5316, 0, 4464.6293)
 local AREA_MAX = Vector3.new(-48, 0, 5332.3471)
@@ -99,9 +99,10 @@ local function isInsideArea(pos)
 end
 
 local function getPetPosition(petId)
-    local petModel = MyPetsFolder:FindFirstChild(tostring(petId))
-    if petModel and petModel.PrimaryPart then
-        return petModel.PrimaryPart.Position
+    for _, pet in ipairs(MyPetsFolder:GetChildren()) do
+        if pet.PrimaryPart then
+            return pet.PrimaryPart.Position
+        end
     end
     return nil
 end
@@ -261,7 +262,8 @@ task.spawn(function()
 
         local freeFarmables = getFreeFarmables()
 
-        for _, petId in ipairs(PET_IDS) do
+        for _, pet in ipairs(MyPetsFolder:GetChildren()) do
+            local petId = pet.Name
             if not PetAssignments[petId] then
                 local target = getBestFarmableForPet(petId)
                 if target then
