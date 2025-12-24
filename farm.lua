@@ -19,8 +19,8 @@ local TARGET_PRIORITY = {
 
 print("pepe9")
 -- AREA DE FARMEO (EDITA ESTOS VALORES)
-local AREA_MIN = Vector3.new(403.694, 0, -217.094)
-local AREA_MAX = Vector3.new(632.6213, 0, -571.2015)
+local AREA_MIN = Vector3.new(81.576, 0, 76.5758)
+local AREA_MAX = Vector3.new(319.896, 0, -124.1442)
 
 -- LISTA DE PETS Y VARIABLES
 
