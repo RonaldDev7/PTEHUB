@@ -17,7 +17,7 @@ local TARGET_PRIORITY = {
     "Watuber.001"
 }
 
-print("pepe9")
+print("itemswrd1")
 -- AREA DE FARMEO (EDITA ESTOS VALORES)
 local AREA_MIN = Vector3.new(81.576, 0, 76.5758)
 local AREA_MAX = Vector3.new(319.896, 0, -124.1442)
