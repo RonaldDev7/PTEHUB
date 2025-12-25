@@ -11,15 +11,14 @@ local AUTO_FARM = true
 local FARM_DELAY = 12
 
 local TARGET_PRIORITY = {
-    "Spartzle1",
-    "Dartibi1",
-    "Kelpony"
+    "Meshes/roca",
+    "arbusto"
 }
 
 print("itemswrd1")
 -- AREA DE FARMEO (EDITA ESTOS VALORES)
-local AREA_MIN = Vector3.new(623.36, 0, 124.2547)
-local AREA_MAX = Vector3.new(802.614, 0, -60.8428)
+local AREA_MIN = Vector3.new(-130.33, 0, 5273.63)
+local AREA_MAX = Vector3.new(1134.57, 0, 4320.58)
 
 -- LISTA DE PETS Y VARIABLES
 
