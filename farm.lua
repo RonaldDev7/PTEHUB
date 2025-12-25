@@ -11,16 +11,15 @@ local AUTO_FARM = true
 local FARM_DELAY = 12
 
 local TARGET_PRIORITY = {
-    "body",
-    "Barkindle.001",
-    "body.011",
-    "Watuber.001"
+    "Spartzle1",
+    "Dartibi1",
+    "Kelpony"
 }
 
 print("itemswrd1")
 -- AREA DE FARMEO (EDITA ESTOS VALORES)
-local AREA_MIN = Vector3.new(81.576, 0, 76.5758)
-local AREA_MAX = Vector3.new(319.896, 0, -124.1442)
+local AREA_MIN = Vector3.new(623.36, 0, 124.2547)
+local AREA_MAX = Vector3.new(802.614, 0, -60.8428)
 
 -- LISTA DE PETS Y VARIABLES
 
