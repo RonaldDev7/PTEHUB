@@ -11,6 +11,7 @@ local AUTO_FARM = true
 local FARM_DELAY = 12
 
 local TARGET_PRIORITY = {
+    "Meshes/Crystal01",
     "Meshes/roca",
     "arbusto"
 }
@@ -23,12 +24,12 @@ local AREA_MAX = Vector3.new(1134.57, 0, 4320.58)
 -- LISTA DE PETS Y VARIABLES
 
 local PET_IDS = {
-    "345965",
-    "345966",
+    "346059",
+    "346063",
     "346042",
-    "345969",
-    "345968",
-    "345967"
+    "346064",
+    "345965",
+    "346062"
 }
 
 -- TRACKING
