@@ -19,9 +19,9 @@ local TARGET_PRIORITY = {
     "15_Shooba.001"
 }
 
-print("itemswrd1")
+print("itemswrdnavidad")
 -- AREA DE FARMEO (EDITA ESTOS VALORES)
-local AREA_MIN = Vector3.new(711.665, 0, 4672.239)
+local AREA_MIN = Vector3.new(759.27, 0, 4607.75)
 local AREA_MAX = Vector3.new(490.224, 0, 5038.04)
 
 -- LISTA DE PETS Y VARIABLES
