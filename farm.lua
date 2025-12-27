@@ -13,13 +13,16 @@ local FARM_DELAY = 12
 local TARGET_PRIORITY = {
     "Meshes/Crystal01",
     "Meshes/roca",
-    "arbusto"
+    "20_Ice1.001",
+    "18_Stegrump.002",
+    "16_Thistling.001",
+    "15_Shooba.001"
 }
 
 print("itemswrd1")
 -- AREA DE FARMEO (EDITA ESTOS VALORES)
-local AREA_MIN = Vector3.new(-130.33, 0, 5273.63)
-local AREA_MAX = Vector3.new(1134.57, 0, 4320.58)
+local AREA_MIN = Vector3.new(711.665, 0, 4672.239)
+local AREA_MAX = Vector3.new(490.224, 0, 5038.04)
 
 -- LISTA DE PETS Y VARIABLES
 
