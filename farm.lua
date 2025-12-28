@@ -14,8 +14,9 @@ local TARGET_PRIORITY = {
     "Meshes/Crystal01",
     "Meshes/roca",
     "arbusto"
+}
 
-print("itemswrdnavidad")
+print("itemswrd1")
 -- AREA DE FARMEO (EDITA ESTOS VALORES)
 local AREA_MIN = Vector3.new(-130.33, 0, 5273.63)
 local AREA_MAX = Vector3.new(1134.57, 0, 4320.58)
